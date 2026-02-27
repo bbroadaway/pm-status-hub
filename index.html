@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Status Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1612; --paper: #f5f0e8; --cream: #ede7d9; --rule: #c9bfad;
+    --accent: #c84b2f; --amber: #d4860a; --green: #2a7a4b; --red: #c84b2f;
+    --muted: #7a7060; --card: #faf7f2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Mono', monospace; background: var(--paper); color: var(--ink); min-height: 100vh; }
+
+  /* ── HEADER ── */
+  header { background: var(--ink); color: var(--paper); }
+  .header-inner { max-width: 1100px; margin: 0 auto; padding: 24px 32px; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .brand h1 { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+  .brand p { font-size: 0.72rem; opacity: 0.55; margin-top: 6px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .header-right { text-align: right; font-size: 0.72rem; color: rgba(245,240,232,0.55); }
+  .header-right span { display: block; margin-top: 4px; }
+  .back-btn { background: rgba(245,240,232,0.12); border: 1px solid rgba(245,240,232,0.25); color: var(--paper); font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 16px; border-radius: 2px; cursor: pointer; transition: background 0.15s; display: none; }
+  .back-btn:hover { background: rgba(245,240,232,0.2); }
+  .breadcrumb { font-size: 0.72rem; color: rgba(245,240,232,0.5); margin-top: 8px; display: none; }
+  .breadcrumb span { color: rgba(245,240,232,0.85); }
+
+  /* ── NAV ── */
+  nav { background: var(--cream); border-bottom: 1px solid var(--rule); display: none; }
+  .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; padding: 0 32px; flex-wrap: wrap; }
+  .tab { padding: 14px 18px; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-bottom: 2px solid transparent; color: var(--muted); transition: color 0.15s, border-color 0.15s; user-select: none; }
+  .tab.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 500; }
+  .tab:hover:not(.active) { color: var(--ink); }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 32px; }
+
+  /* ── PORTFOLIO HOME ── */
+  #portfolio-home { display: block; }
+  .portfolio-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+  .portfolio-title { font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: 700; }
+  .portfolio-subtitle { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .project-card { background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 22px 24px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; position: relative; }
+  .project-card:hover { border-color: var(--ink); box-shadow: 0 4px 16px rgba(26,22,18,0.1); }
+  .project-card .pc-name { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; padding-right: 32px; }
+  .project-card .pc-meta { font-size: 0.7rem; color: var(--muted); margin-bottom: 14px; }
+  .project-card .pc-rag-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .pc-rag-chip { font-size: 0.65rem; padding: 3px 10px; border-radius: 2px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+  .pc-rag-chip.green { background: #e6f4ec; color: var(--green); border: 1px solid #a8d9bc; }
+  .pc-rag-chip.amber { background: #fef6e4; color: var(--amber); border: 1px solid #f5dfa0; }
+  .pc-rag-chip.red { background: #fdecea; color: var(--red); border: 1px solid #f5c4be; }
+  .pc-rag-chip.none { background: var(--cream); color: var(--muted); border: 1px solid var(--rule); }
+  .project-card .pc-footer { display: flex; align-items: center; justify-content: space-between; font-size: 0.68rem; color: var(--muted); }
+  .pc-overall { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+  .pc-del-btn { position: absolute; top: 14px; right: 14px; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.9rem; padding: 4px 6px; border-radius: 2px; opacity: 0; transition: opacity 0.15s, color 0.15s; }
+  .project-card:hover .pc-del-btn { opacity: 1; }
+  .pc-del-btn:hover { color: var(--red); }
+
+  .add-project-card { background: transparent; border: 2px dashed var(--rule); border-radius: 4px; padding: 22px 24px; cursor: pointer; transition: border-color 0.15s; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 140px; color: var(--muted); font-size: 0.8rem; }
+  .add-project-card:hover { border-color: var(--ink); color: var(--ink); }
+  .add-project-card .plus { font-size: 1.6rem; line-height: 1; }
+
+  /* ── PROJECT VIEW ── */
+  #project-view { display: none; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── COMMON ── */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+  .section-title { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; }
+  .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn { background: var(--ink); color: var(--paper); border: none; padding: 8px 20px; font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: opacity 0.15s; white-space: nowrap; }
+  .btn:hover { opacity: 0.8; }
+  .btn.secondary { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
+  .btn.accent { background: var(--accent); }
+
+  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .stat-card { background: var(--card); border: 1px solid var(--rule); padding: 20px 24px; border-radius: 4px; }
+  .stat-card .label { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .stat-card .value { font-family: 'Fraunces', serif; font-size: 2.4rem; font-weight: 700; line-height: 1; }
+  .rag-summary { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px; }
+  .rag-pill { padding: 6px 18px; border-radius: 2px; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+  .rag-pill.red { background: #fdecea; color: var(--red); border: 1px solid #f5c4be; }
+  .rag-pill.amber { background: #fef6e4; color: var(--amber); border: 1px solid #f5dfa0; }
+  .rag-pill.green { background: #e6f4ec; color: var(--green); border: 1px solid #a8d9bc; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; background: var(--card); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; margin-bottom: 32px; }
+  thead { background: var(--cream); }
+  th { text-align: left; padding: 12px 16px; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--rule); }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--cream); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--cream); }
+
+  .rag-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+  .rag-dot.red { background: var(--red); }
+  .rag-dot.amber { background: var(--amber); }
+  .rag-dot.green { background: var(--green); }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,22,18,0.55); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 32px; width: 520px; max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 16px 48px rgba(26,22,18,0.2); }
+  .modal h2 { font-family: 'Fraunces', serif; font-size: 1.3rem; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+  .form-group { margin-bottom: 18px; }
+  label { display: block; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  input[type=text], input[type=date], textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 2px; background: var(--card); font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--ink); outline: none; transition: border-color 0.15s; }
+  input:focus, textarea:focus { border-color: var(--ink); }
+  textarea { resize: vertical; min-height: 80px; }
+  .rag-select { display: flex; gap: 10px; flex-wrap: wrap; }
+  .rag-option { flex: 1; min-width: 80px; padding: 10px; border: 2px solid var(--rule); border-radius: 2px; cursor: pointer; text-align: center; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; transition: all 0.15s; user-select: none; }
+  .rag-option[data-val="red"] { color: var(--red); }
+  .rag-option[data-val="amber"] { color: var(--amber); }
+  .rag-option[data-val="green"] { color: var(--green); }
+  .rag-option.selected[data-val="red"] { background: #fdecea; border-color: var(--red); }
+  .rag-option.selected[data-val="amber"] { background: #fef6e4; border-color: var(--amber); }
+  .rag-option.selected[data-val="green"] { background: #e6f4ec; border-color: var(--green); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--rule); }
+
+  .update-entry { background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 20px 24px; margin-bottom: 12px; }
+  .entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+  .week-label { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 600; }
+  .timestamp { font-size: 0.68rem; color: var(--muted); }
+  .deliverable-row { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; padding: 6px 0; border-bottom: 1px solid var(--cream); }
+  .deliverable-row:last-of-type { border-bottom: none; }
+  .del-name { flex: 1; font-weight: 500; }
+  .del-comment { color: var(--muted); font-size: 0.76rem; flex: 2; }
+  .overall-note { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--cream); font-size: 0.8rem; color: var(--muted); }
+  .overall-note strong { color: var(--ink); }
+
+  .week-form-card { background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 28px 32px; margin-bottom: 24px; }
+  .week-form-card h2 { font-family: 'Fraunces', serif; font-size: 1.3rem; margin-bottom: 6px; }
+  .week-form-card .subtitle { font-size: 0.72rem; color: var(--muted); margin-bottom: 24px; }
+  .del-update-row { background: var(--paper); border: 1px solid var(--cream); border-radius: 3px; padding: 16px; margin-bottom: 10px; }
+  .del-title { font-weight: 500; margin-bottom: 10px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
+  .due-tag { font-size: 0.65rem; color: var(--muted); }
+  .del-update-fields { display: grid; grid-template-columns: 180px 1fr; gap: 10px; align-items: start; }
+  .empty-state { text-align: center; padding: 48px 24px; color: var(--muted); font-size: 0.85rem; font-style: italic; }
+  .empty-state span { display: block; font-size: 2rem; margin-bottom: 10px; opacity: 0.4; }
+  .delete-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; padding: 2px 6px; border-radius: 2px; transition: color 0.15s; }
+  .delete-btn:hover { color: var(--red); }
+  .progress-bar-wrap { background: var(--cream); height: 6px; border-radius: 3px; overflow: hidden; }
+  .progress-bar { height: 6px; border-radius: 3px; transition: width 0.4s; }
+  .no-data { color: var(--muted); font-style: italic; font-size: 0.8rem; }
+
+  .data-panel { background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 24px; margin-bottom: 20px; }
+  .data-panel h3 { font-family: 'Fraunces', serif; font-size: 1.05rem; margin-bottom: 8px; }
+  .data-panel p { font-size: 0.78rem; color: var(--muted); margin-bottom: 14px; line-height: 1.7; }
+  .data-panel .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--ink); color: var(--paper); padding: 12px 20px; border-radius: 4px; font-size: 0.78rem; z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+  #importFile { display: none; }
+  #importPortfolioFile { display: none; }
+  #director-print-area { display: none; }
+
+  @media print {
+    body * { visibility: hidden; }
+    #director-print-area, #director-print-area * { visibility: visible; }
+    #director-print-area { position: fixed; inset: 0; background: #fff; padding: 40px; display: block !important; }
+  }
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <h1>Portfolio Status Hub</h1>
+      <p id="header-subtitle">Project Manager Dashboard</p>
+    </div>
+    <div class="header-right">
+      <button class="back-btn" id="backBtn" onclick="goHome()">← All Projects</button>
+      <div class="breadcrumb" id="breadcrumb">Portfolio / <span id="breadcrumb-name"></span></div>
+      <span id="currentDate"></span>
+    </div>
+  </div>
+</header>
+<nav id="project-nav">
+  <div class="nav-inner">
+    <div class="tab active" data-tab="dashboard">Dashboard</div>
+    <div class="tab" data-tab="deliverables">Deliverables</div>
+    <div class="tab" data-tab="weekly">Weekly Update</div>
+    <div class="tab" data-tab="log">Update Log</div>
+    <div class="tab" data-tab="data">Data &amp; Backup</div>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ════════════════════════════════════════════
+       PORTFOLIO HOME
+  ════════════════════════════════════════════ -->
+  <div id="portfolio-home">
+    <div class="portfolio-header">
+      <div>
+        <div class="portfolio-title">My Projects</div>
+        <div class="portfolio-subtitle" id="portfolio-meta"></div>
+      </div>
+      <div class="btn-group">
+        <button class="btn secondary" onclick="document.getElementById('importPortfolioFile').click()">⬆ Import Portfolio</button>
+        <button class="btn secondary" onclick="exportPortfolio()">⬇ Export Portfolio</button>
+        <input type="file" id="importPortfolioFile" accept=".json" onchange="importPortfolio(event)">
+        <button class="btn" onclick="openNewProjectModal()">+ New Project</button>
+      </div>
+    </div>
+
+    <div class="projects-grid" id="projects-grid"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       PROJECT VIEW
+  ════════════════════════════════════════════ -->
+  <div id="project-view">
+
+    <!-- DASHBOARD -->
+    <div class="section active" id="tab-dashboard">
+      <div class="dashboard-grid">
+        <div class="stat-card"><div class="label">Total Deliverables</div><div class="value" id="stat-total">0</div></div>
+        <div class="stat-card"><div class="label">On Track (Green)</div><div class="value" style="color:var(--green)" id="stat-green">0</div></div>
+        <div class="stat-card"><div class="label">Needs Attention</div><div class="value" style="color:var(--red)" id="stat-atrisk">0</div></div>
+      </div>
+      <div class="rag-summary" id="rag-summary-pills"></div>
+      <div class="section-header">
+        <div class="section-title">Deliverable Health</div>
+        <span style="font-size:0.72rem;color:var(--muted);">As of latest weekly update</span>
+      </div>
+      <table><thead><tr><th>Deliverable</th><th>Owner</th><th>Due Date</th><th>Status</th><th>Latest Comment</th></tr></thead>
+        <tbody id="dashboard-tbody"></tbody></table>
+      <div class="section-header">
+        <div class="section-title">Latest Update Summary</div>
+        <button class="btn accent" id="directorSummaryBtn" style="display:none;" onclick="generateDirectorSummary()">📄 Director Summary</button>
+      </div>
+      <div id="latest-update-summary" class="update-entry" style="display:none;"></div>
+      <div id="no-updates-yet" class="empty-state"><span>📋</span>No weekly updates yet.<br>Go to <strong>Weekly Update</strong> to log this week's status.</div>
+    </div>
+
+    <!-- DELIVERABLES -->
+    <div class="section" id="tab-deliverables">
+      <div class="section-header">
+        <div class="section-title">Deliverables &amp; Milestones</div>
+        <button class="btn" id="addDeliverableBtn">+ Add Deliverable</button>
+      </div>
+      <table><thead><tr><th>Deliverable</th><th>Owner</th><th>Due Date</th><th>Status</th><th>Progress</th><th></th></tr></thead>
+        <tbody id="del-tbody"></tbody></table>
+      <div id="del-empty" class="empty-state" style="display:none;"><span>🎯</span>No deliverables yet.</div>
+    </div>
+
+    <!-- WEEKLY UPDATE -->
+    <div class="section" id="tab-weekly">
+      <div class="week-form-card">
+        <h2>Log Weekly Status Update</h2>
+        <div class="subtitle">Complete this every Monday. Data saves automatically.</div>
+        <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div><label>Week Of (Monday)</label><input type="date" id="weekOf"></div>
+          <div><label>Overall Project Health</label>
+            <div class="rag-select" id="overall-rag">
+              <div class="rag-option" data-val="red">🔴 Red</div>
+              <div class="rag-option" data-val="amber">🟡 Amber</div>
+              <div class="rag-option selected" data-val="green">🟢 Green</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group"><label>Executive Summary</label><textarea id="execSummary" rows="3" placeholder="What's the most important thing the Director should know this week?"></textarea></div>
+        <div class="form-group"><label>Deliverable Updates</label><div id="del-update-rows"></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group"><label>Key Decisions Needed</label><textarea id="decisions" rows="3" placeholder="Blockers or decisions required from leadership..."></textarea></div>
+          <div class="form-group"><label>Risks &amp; Issues</label><textarea id="risks" rows="3" placeholder="Any emerging risks or active issues..."></textarea></div>
+        </div>
+        <div class="form-group"><label>Next Week's Focus</label><textarea id="nextWeek" rows="2" placeholder="Top 2-3 priorities for the coming week..."></textarea></div>
+        <div style="text-align:right;"><button class="btn" id="submitUpdateBtn">Submit Weekly Update</button></div>
+      </div>
+    </div>
+
+    <!-- LOG -->
+    <div class="section" id="tab-log">
+      <div class="section-header">
+        <div class="section-title">Update History</div>
+        <div class="btn-group">
+          <button class="btn accent" onclick="generateDirectorSummary()">📄 Director Summary</button>
+          <button class="btn secondary" onclick="window.print()">🖨 Print All</button>
+        </div>
+      </div>
+      <div id="log-container"></div>
+    </div>
+
+    <!-- DATA & BACKUP -->
+    <div class="section" id="tab-data">
+      <div class="section-header"><div class="section-title">Data &amp; Backup</div></div>
+      <div class="data-panel">
+        <h3>💾 Export This Project</h3>
+        <p>Download this project's data as a <strong>.json</strong> backup file. Recommended every Friday.</p>
+        <div class="actions"><button class="btn" onclick="exportProject()">⬇ Export Project Backup (.json)</button></div>
+      </div>
+      <div class="data-panel">
+        <h3>📂 Import / Restore This Project</h3>
+        <p>Restore this project from a previously exported <strong>.json</strong> file. <strong>Warning:</strong> replaces all current data for this project.</p>
+        <div class="actions">
+          <button class="btn secondary" onclick="document.getElementById('importFile').click()">⬆ Import Project Backup (.json)</button>
+          <input type="file" id="importFile" accept=".json" onchange="importProject(event)">
+        </div>
+      </div>
+      <div class="data-panel">
+        <h3>📄 Director Summary Report</h3>
+        <p>Generate a clean one-page summary of the latest weekly update to share with the Director of Projects.</p>
+        <div class="actions"><button class="btn accent" onclick="generateDirectorSummary()">Generate &amp; Print Summary</button></div>
+      </div>
+      <div class="data-panel" style="border-color:#f5c4be;">
+        <h3 style="color:var(--red);">⚠ Delete This Project</h3>
+        <p>Permanently delete this project and all its data. <strong>This cannot be undone.</strong></p>
+        <div class="actions"><button class="btn" style="background:var(--red);" onclick="deleteCurrentProject()">Delete Project</button></div>
+      </div>
+    </div>
+
+  </div><!-- /project-view -->
+
+</main>
+
+<!-- NEW PROJECT MODAL -->
+<div class="modal-overlay" id="new-project-modal">
+  <div class="modal">
+    <h2>New Project</h2>
+    <div class="form-group"><label>Project Name *</label><input type="text" id="np-name" placeholder="e.g. Website Redesign"></div>
+    <div class="form-group"><label>Client / Account</label><input type="text" id="np-client" placeholder="e.g. Acme Corp"></div>
+    <div class="form-group"><label>Project Description (optional)</label><textarea id="np-desc" rows="2" placeholder="Brief description..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeNewProjectModal()">Cancel</button>
+      <button class="btn" onclick="createProject()">Create Project</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELIVERABLE MODAL -->
+<div class="modal-overlay" id="del-modal">
+  <div class="modal">
+    <h2 id="modal-title">Add Deliverable</h2>
+    <div class="form-group"><label>Deliverable Name *</label><input type="text" id="del-name" placeholder="e.g. Phase 1 Design Complete"></div>
+    <div class="form-group"><label>Owner / Responsible</label><input type="text" id="del-owner" placeholder="e.g. Jane Smith"></div>
+    <div class="form-group"><label>Due Date</label><input type="date" id="del-due"></div>
+    <div class="form-group"><label>Initial Status</label>
+      <div class="rag-select" id="del-rag">
+        <div class="rag-option selected" data-val="green">🟢 Green</div>
+        <div class="rag-option" data-val="amber">🟡 Amber</div>
+        <div class="rag-option" data-val="red">🔴 Red</div>
+      </div>
+    </div>
+    <div class="form-group"><label>Progress % (0–100)</label><input type="text" id="del-progress" placeholder="0"></div>
+    <div class="form-group"><label>Notes</label><textarea id="del-notes" placeholder="Any context or dependencies..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn secondary" id="closeDelModal">Cancel</button>
+      <button class="btn" id="saveDeliverable">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- DIRECTOR PRINT AREA -->
+<div id="director-print-area"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+// portfolio = { projects: [ { id, name, client, desc, deliverables:[], updates:[] }, ... ] }
+let portfolio = { projects: [] };
+let currentProjectId = null;
+
+function getProject(id) { return portfolio.projects.find(p => p.id === (id || currentProjectId)); }
+function currentProject() { return getProject(currentProjectId); }
+
+function save() { try { localStorage.setItem('psh_portfolio', JSON.stringify(portfolio)); } catch(e) {} }
+function load() { try { const d = localStorage.getItem('psh_portfolio'); if (d) portfolio = JSON.parse(d); } catch(e) {} }
+
+// ── INIT ──
+load();
+document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
+
+function getNearestMonday() {
+  const d = new Date(), day = d.getDay();
+  d.setDate(d.getDate() - day + (day === 0 ? -6 : 1));
+  return d.toISOString().split('T')[0];
+}
+
+// ── TOAST ──
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ══════════════════════════════════════════════════════════
+// PORTFOLIO HOME
+// ══════════════════════════════════════════════════════════
+function goHome() {
+  currentProjectId = null;
+  document.getElementById('portfolio-home').style.display = 'block';
+  document.getElementById('project-view').style.display = 'none';
+  document.getElementById('project-nav').style.display = 'none';
+  document.getElementById('backBtn').style.display = 'none';
+  document.getElementById('breadcrumb').style.display = 'none';
+  document.getElementById('header-subtitle').textContent = 'Project Manager Dashboard';
+  renderPortfolio();
+}
+
+function renderPortfolio() {
+  const grid = document.getElementById('projects-grid');
+  const meta = document.getElementById('portfolio-meta');
+  const projects = portfolio.projects;
+  meta.textContent = `${projects.length} project${projects.length !== 1 ? 's' : ''} · Last updated ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
+  grid.innerHTML = '';
+
+  projects.forEach(proj => {
+    const dels = proj.deliverables || [];
+    const latestUpdate = (proj.updates || [])[0];
+    const greens = dels.filter(d=>d.rag==='green').length;
+    const ambers = dels.filter(d=>d.rag==='amber').length;
+    const reds = dels.filter(d=>d.rag==='red').length;
+    const overallRag = latestUpdate ? latestUpdate.overallRag : null;
+    const lastUpdated = latestUpdate ? new Date(latestUpdate.submittedAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'No updates yet';
+
+    const card = document.createElement('div');
+    card.className = 'project-card';
+    card.onclick = (e) => { if (!e.target.classList.contains('pc-del-btn')) openProject(proj.id); };
+    card.innerHTML = `
+      <button class="pc-del-btn" title="Delete project" onclick="deleteProject('${proj.id}')">🗑</button>
+      <div class="pc-name">${esc(proj.name)}</div>
+      <div class="pc-meta">${proj.client ? esc(proj.client) + ' · ' : ''}${dels.length} deliverable${dels.length!==1?'s':''}</div>
+      <div class="pc-rag-row">
+        <span class="pc-rag-chip green">🟢 ${greens}</span>
+        <span class="pc-rag-chip amber">🟡 ${ambers}</span>
+        <span class="pc-rag-chip red">🔴 ${reds}</span>
+      </div>
+      <div class="pc-footer">
+        ${overallRag ? `<div class="pc-overall"><span class="rag-dot ${overallRag}"></span>Overall: ${ragLabel(overallRag)}</div>` : '<div style="color:var(--muted);font-style:italic;">No status yet</div>'}
+        <div>Updated ${lastUpdated}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  // Add project card
+  const addCard = document.createElement('div');
+  addCard.className = 'add-project-card';
+  addCard.onclick = openNewProjectModal;
+  addCard.innerHTML = '<span class="plus">+</span><span>Add New Project</span>';
+  grid.appendChild(addCard);
+}
+
+// ══════════════════════════════════════════════════════════
+// PROJECT NAVIGATION
+// ══════════════════════════════════════════════════════════
+function openProject(id) {
+  currentProjectId = id;
+  const proj = currentProject();
+  document.getElementById('portfolio-home').style.display = 'none';
+  document.getElementById('project-view').style.display = 'block';
+  document.getElementById('project-nav').style.display = 'block';
+  document.getElementById('backBtn').style.display = 'inline-block';
+  document.getElementById('breadcrumb').style.display = 'block';
+  document.getElementById('breadcrumb-name').textContent = proj.name;
+  document.getElementById('header-subtitle').textContent = (proj.client ? proj.client + ' · ' : '') + proj.name;
+
+  // Reset to dashboard tab
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelector('[data-tab="dashboard"]').classList.add('active');
+  document.getElementById('tab-dashboard').classList.add('active');
+
+  document.getElementById('weekOf').value = getNearestMonday();
+  initRag(document.getElementById('overall-rag'));
+  setRag(document.getElementById('overall-rag'), 'green');
+
+  renderDashboard();
+}
+
+// Tabs
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+    if (t.dataset.tab === 'dashboard') renderDashboard();
+    if (t.dataset.tab === 'weekly') renderWeeklyForm();
+    if (t.dataset.tab === 'log') renderLog();
+    if (t.dataset.tab === 'deliverables') renderDeliverables();
+  });
+});
+
+// ══════════════════════════════════════════════════════════
+// NEW PROJECT MODAL
+// ══════════════════════════════════════════════════════════
+function openNewProjectModal() {
+  document.getElementById('np-name').value = '';
+  document.getElementById('np-client').value = '';
+  document.getElementById('np-desc').value = '';
+  document.getElementById('new-project-modal').classList.add('open');
+  setTimeout(() => document.getElementById('np-name').focus(), 100);
+}
+function closeNewProjectModal() { document.getElementById('new-project-modal').classList.remove('open'); }
+function createProject() {
+  const name = document.getElementById('np-name').value.trim();
+  if (!name) { alert('Project name is required.'); return; }
+  const proj = { id: Date.now().toString(), name, client: document.getElementById('np-client').value.trim(), desc: document.getElementById('np-desc').value.trim(), deliverables: [], updates: [] };
+  portfolio.projects.push(proj);
+  save(); closeNewProjectModal();
+  openProject(proj.id);
+  toast('✅ Project created!');
+}
+
+// ══════════════════════════════════════════════════════════
+// RAG HELPERS
+// ══════════════════════════════════════════════════════════
+function initRag(c) {
+  const opts = c.querySelectorAll('.rag-option');
+  opts.forEach(o => {
+    const newO = o.cloneNode(true);
+    o.parentNode.replaceChild(newO, o);
+  });
+  c.querySelectorAll('.rag-option').forEach(o => {
+    o.addEventListener('click', () => { c.querySelectorAll('.rag-option').forEach(x=>x.classList.remove('selected')); o.classList.add('selected'); });
+  });
+}
+function getRag(c) { const s = c.querySelector('.rag-option.selected'); return s ? s.dataset.val : 'green'; }
+function setRag(c, v) { c.querySelectorAll('.rag-option').forEach(o => o.classList.toggle('selected', o.dataset.val === v)); }
+
+// ══════════════════════════════════════════════════════════
+// DELIVERABLES
+// ══════════════════════════════════════════════════════════
+let editingDelId = null;
+document.getElementById('addDeliverableBtn').addEventListener('click', () => {
+  editingDelId = null;
+  document.getElementById('modal-title').textContent = 'Add Deliverable';
+  ['del-name','del-owner','del-due','del-progress','del-notes'].forEach(id => document.getElementById(id).value = '');
+  initRag(document.getElementById('del-rag')); setRag(document.getElementById('del-rag'),'green');
+  document.getElementById('del-modal').classList.add('open');
+});
+document.getElementById('closeDelModal').addEventListener('click', () => document.getElementById('del-modal').classList.remove('open'));
+document.getElementById('saveDeliverable').addEventListener('click', () => {
+  const name = document.getElementById('del-name').value.trim();
+  if (!name) { alert('Name is required.'); return; }
+  const proj = currentProject(); if (!proj) return;
+  const item = { id: editingDelId || Date.now().toString(), name, owner: document.getElementById('del-owner').value.trim(), due: document.getElementById('del-due').value, rag: getRag(document.getElementById('del-rag')), progress: Math.min(100,Math.max(0,parseInt(document.getElementById('del-progress').value)||0)), notes: document.getElementById('del-notes').value.trim() };
+  if (editingDelId) { const i = proj.deliverables.findIndex(d=>d.id===editingDelId); if(i>-1) proj.deliverables[i]=item; }
+  else proj.deliverables.push(item);
+  save(); document.getElementById('del-modal').classList.remove('open'); renderDeliverables(); renderDashboard(); toast('✅ Deliverable saved.');
+});
+
+function renderDeliverables() {
+  const proj = currentProject(); if (!proj) return;
+  const tbody = document.getElementById('del-tbody'), empty = document.getElementById('del-empty');
+  tbody.innerHTML = '';
+  if (!proj.deliverables.length) { empty.style.display='block'; return; }
+  empty.style.display = 'none';
+  proj.deliverables.forEach(d => {
+    const dueStr = d.due ? new Date(d.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+    const bar = d.rag==='red'?'var(--red)':d.rag==='amber'?'var(--amber)':'var(--green)';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${esc(d.name)}</strong>${d.notes?`<br><span style="font-size:0.72rem;color:var(--muted)">${esc(d.notes)}</span>`:''}</td><td>${esc(d.owner)||'<span class="no-data">—</span>'}</td><td>${dueStr}</td><td><span class="rag-dot ${d.rag}"></span>${ragLabel(d.rag)}</td><td style="min-width:120px;"><div style="font-size:0.72rem;margin-bottom:4px;">${d.progress}%</div><div class="progress-bar-wrap"><div class="progress-bar" style="width:${d.progress}%;background:${bar}"></div></div></td><td style="text-align:right;white-space:nowrap;"><button class="delete-btn" onclick="editDel('${d.id}')">✏️</button><button class="delete-btn" onclick="deleteDel('${d.id}')">🗑</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+window.editDel = function(id) {
+  const proj = currentProject(); if (!proj) return;
+  const d = proj.deliverables.find(x=>x.id===id); if (!d) return;
+  editingDelId = id; document.getElementById('modal-title').textContent = 'Edit Deliverable';
+  document.getElementById('del-name').value=d.name; document.getElementById('del-owner').value=d.owner; document.getElementById('del-due').value=d.due; document.getElementById('del-progress').value=d.progress; document.getElementById('del-notes').value=d.notes;
+  initRag(document.getElementById('del-rag')); setRag(document.getElementById('del-rag'),d.rag);
+  document.getElementById('del-modal').classList.add('open');
+};
+window.deleteDel = function(id) {
+  if (!confirm('Delete this deliverable?')) return;
+  const proj = currentProject(); if (!proj) return;
+  proj.deliverables = proj.deliverables.filter(d=>d.id!==id); save(); renderDeliverables(); renderDashboard();
+};
+
+// ══════════════════════════════════════════════════════════
+// WEEKLY FORM
+// ══════════════════════════════════════════════════════════
+function renderWeeklyForm() {
+  const proj = currentProject(); if (!proj) return;
+  const container = document.getElementById('del-update-rows');
+  if (!proj.deliverables.length) { container.innerHTML='<div class="empty-state"><span>📦</span>Add deliverables in the <strong>Deliverables</strong> tab first.</div>'; return; }
+  container.innerHTML = '';
+  proj.deliverables.forEach(d => {
+    const dueStr = d.due ? `Due ${new Date(d.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}` : '';
+    const div = document.createElement('div'); div.className='del-update-row'; div.dataset.id=d.id;
+    div.innerHTML = `<div class="del-title"><span class="rag-dot ${d.rag}"></span>${esc(d.name)}${dueStr?`<span class="due-tag">(${dueStr})</span>`:''}</div><div class="del-update-fields"><div><label>Status</label><div class="rag-select del-rag-inline" style="flex-direction:column;gap:6px;"><div class="rag-option ${d.rag==='green'?'selected':''}" data-val="green">🟢 Green</div><div class="rag-option ${d.rag==='amber'?'selected':''}" data-val="amber">🟡 Amber</div><div class="rag-option ${d.rag==='red'?'selected':''}" data-val="red">🔴 Red</div></div></div><div><label>Progress %</label><input type="text" class="del-prog-input" value="${d.progress}" style="margin-bottom:10px;"><label>Comment / Update</label><textarea class="del-comment-input" rows="2" placeholder="What happened this week?"></textarea></div></div>`;
+    container.appendChild(div);
+    initRag(div.querySelector('.del-rag-inline'));
+  });
+}
+
+document.getElementById('submitUpdateBtn').addEventListener('click', () => {
+  const proj = currentProject(); if (!proj) return;
+  const weekOf = document.getElementById('weekOf').value;
+  if (!weekOf) { alert('Please select a week.'); return; }
+  const delUpdates = [];
+  document.querySelectorAll('.del-update-row').forEach(row => {
+    const id=row.dataset.id, rag=getRag(row.querySelector('.del-rag-inline')), prog=Math.min(100,Math.max(0,parseInt(row.querySelector('.del-prog-input').value)||0)), comment=row.querySelector('.del-comment-input').value.trim();
+    delUpdates.push({id,rag,progress:prog,comment});
+    const del=proj.deliverables.find(d=>d.id===id); if(del){del.rag=rag;del.progress=prog;}
+  });
+  proj.updates.unshift({id:Date.now().toString(),weekOf,submittedAt:new Date().toISOString(),overallRag:getRag(document.getElementById('overall-rag')),execSummary:document.getElementById('execSummary').value.trim(),decisions:document.getElementById('decisions').value.trim(),risks:document.getElementById('risks').value.trim(),nextWeek:document.getElementById('nextWeek').value.trim(),delUpdates});
+  save(); ['execSummary','decisions','risks','nextWeek'].forEach(id=>document.getElementById(id).value='');
+  toast('✅ Weekly update logged!'); renderDashboard(); renderDeliverables();
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelector('[data-tab="log"]').classList.add('active');
+  document.getElementById('tab-log').classList.add('active'); renderLog();
+});
+
+// ══════════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════════
+function renderDashboard() {
+  const proj = currentProject(); if (!proj) return;
+  const dels = proj.deliverables;
+  document.getElementById('stat-total').textContent=dels.length;
+  document.getElementById('stat-green').textContent=dels.filter(d=>d.rag==='green').length;
+  document.getElementById('stat-atrisk').textContent=dels.filter(d=>d.rag==='red'||d.rag==='amber').length;
+  document.getElementById('rag-summary-pills').innerHTML=`<div class="rag-pill green">🟢 ${dels.filter(d=>d.rag==='green').length} On Track</div><div class="rag-pill amber">🟡 ${dels.filter(d=>d.rag==='amber').length} At Risk</div><div class="rag-pill red">🔴 ${dels.filter(d=>d.rag==='red').length} Off Track</div>`;
+  const tbody=document.getElementById('dashboard-tbody'); tbody.innerHTML='';
+  if (!dels.length) { tbody.innerHTML='<tr><td colspan="5" class="no-data" style="padding:24px;text-align:center;">No deliverables yet. Add them in the Deliverables tab.</td></tr>'; }
+  else dels.forEach(d=>{const u=proj.updates.flatMap(x=>x.delUpdates).find(x=>x.id===d.id),dueStr=d.due?new Date(d.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';tbody.innerHTML+=`<tr><td><strong>${esc(d.name)}</strong></td><td>${esc(d.owner)||'—'}</td><td>${dueStr}</td><td><span class="rag-dot ${d.rag}"></span>${ragLabel(d.rag)}</td><td style="color:var(--muted);font-size:0.78rem;">${esc(u?.comment||'—')}</td></tr>`;});
+  const lu=proj.updates[0],summaryEl=document.getElementById('latest-update-summary'),noUp=document.getElementById('no-updates-yet'),dirBtn=document.getElementById('directorSummaryBtn');
+  if(!lu){summaryEl.style.display='none';noUp.style.display='block';dirBtn.style.display='none';return;}
+  noUp.style.display='none';summaryEl.style.display='block';dirBtn.style.display='inline-block';
+  const wk=new Date(lu.weekOf+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  summaryEl.innerHTML=`<div class="entry-header"><div class="week-label">Week of ${wk}</div><div style="display:flex;align-items:center;gap:10px;"><span class="rag-dot ${lu.overallRag}"></span><strong>Overall: ${ragLabel(lu.overallRag)}</strong></div></div>${lu.execSummary?`<p style="font-size:0.82rem;margin-bottom:12px;">${esc(lu.execSummary)}</p>`:''}${lu.risks?`<div class="overall-note"><strong>⚠ Risks:</strong> ${esc(lu.risks)}</div>`:''}${lu.nextWeek?`<div class="overall-note"><strong>→ Next Week:</strong> ${esc(lu.nextWeek)}</div>`:''}`;
+}
+
+// ══════════════════════════════════════════════════════════
+// LOG
+// ══════════════════════════════════════════════════════════
+function renderLog() {
+  const proj = currentProject(); if (!proj) return;
+  const container=document.getElementById('log-container');
+  if(!proj.updates.length){container.innerHTML='<div class="empty-state"><span>📅</span>No updates logged yet.</div>';return;}
+  container.innerHTML='';
+  proj.updates.forEach(u=>{
+    const wk=new Date(u.weekOf+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}),submitted=new Date(u.submittedAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+    let delRows='';
+    u.delUpdates.forEach(du=>{const del=proj.deliverables.find(d=>d.id===du.id);delRows+=`<div class="deliverable-row"><span class="rag-dot ${du.rag}"></span><span class="del-name">${esc(del?del.name:'Deleted Deliverable')}</span><span class="del-comment">${du.progress}% — ${du.comment?esc(du.comment):'<em>No comment</em>'}</span></div>`;});
+    const div=document.createElement('div');div.className='update-entry';
+    div.innerHTML=`<div class="entry-header"><div class="week-label">Week of ${wk}</div><div style="display:flex;align-items:center;gap:16px;"><span><span class="rag-dot ${u.overallRag}"></span><strong>Overall: ${ragLabel(u.overallRag)}</strong></span><span class="timestamp">Logged ${submitted}</span><button class="delete-btn" onclick="deleteUpdate('${u.id}')">🗑</button></div></div>${u.execSummary?`<p style="font-size:0.82rem;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--cream);"><strong>Summary:</strong> ${esc(u.execSummary)}</p>`:''} ${delRows}${u.decisions?`<div class="overall-note"><strong>🔑 Decisions Needed:</strong> ${esc(u.decisions)}</div>`:''}${u.risks?`<div class="overall-note"><strong>⚠ Risks &amp; Issues:</strong> ${esc(u.risks)}</div>`:''}${u.nextWeek?`<div class="overall-note"><strong>→ Next Week:</strong> ${esc(u.nextWeek)}</div>`:''}`;
+    container.appendChild(div);
+  });
+}
+window.deleteUpdate = function(id){
+  if(!confirm('Delete this update?'))return;
+  const proj=currentProject();if(!proj)return;
+  proj.updates=proj.updates.filter(u=>u.id!==id);save();renderLog();renderDashboard();
+};
+
+// ══════════════════════════════════════════════════════════
+// DELETE PROJECT / DELIVERABLE
+// ══════════════════════════════════════════════════════════
+window.deleteProject = function(id) {
+  const proj = portfolio.projects.find(p=>p.id===id);
+  if (!proj) return;
+  if (!confirm(`Delete project "${proj.name}"? This cannot be undone.`)) return;
+  portfolio.projects = portfolio.projects.filter(p=>p.id!==id);
+  save(); renderPortfolio(); toast('Project deleted.');
+};
+window.deleteCurrentProject = function() {
+  const proj = currentProject(); if (!proj) return;
+  if (!confirm(`Delete "${proj.name}" and all its data? This cannot be undone.`)) return;
+  portfolio.projects = portfolio.projects.filter(p=>p.id!==currentProjectId);
+  save(); goHome(); toast('Project deleted.');
+};
+
+// ══════════════════════════════════════════════════════════
+// EXPORT / IMPORT — PROJECT
+// ══════════════════════════════════════════════════════════
+window.exportProject = function() {
+  const proj = currentProject(); if (!proj) return;
+  const blob=new Blob([JSON.stringify({...proj,exportedAt:new Date().toISOString(),version:'2.0'},null,2)],{type:'application/json'});
+  const a=document.createElement('a'),dateStr=new Date().toISOString().split('T')[0],slug=proj.name.toLowerCase().replace(/[^a-z0-9]/g,'-');
+  a.href=URL.createObjectURL(blob);a.download=`${slug}-backup-${dateStr}.json`;a.click();URL.revokeObjectURL(a.href);
+  toast('✅ Project backup exported!');
+};
+window.importProject = function(event) {
+  const file=event.target.files[0];if(!file)return;
+  if(!confirm('⚠ This will replace ALL data for this project. Are you sure?')){event.target.value='';return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try {
+      const imp=JSON.parse(e.target.result);
+      if(!imp.deliverables||!imp.updates)throw new Error();
+      const proj=currentProject();if(!proj)return;
+      proj.name=imp.name||proj.name;proj.client=imp.client||proj.client;proj.desc=imp.desc||proj.desc;
+      proj.deliverables=imp.deliverables;proj.updates=imp.updates;
+      save();renderDashboard();renderDeliverables();
+      document.getElementById('breadcrumb-name').textContent=proj.name;
+      document.getElementById('header-subtitle').textContent=(proj.client?proj.client+' · ':'')+proj.name;
+      toast('✅ Project restored!');
+    } catch(err){alert('❌ Invalid backup file.');}
+    event.target.value='';
+  };
+  reader.readAsText(file);
+};
+
+// ══════════════════════════════════════════════════════════
+// EXPORT / IMPORT — FULL PORTFOLIO
+// ══════════════════════════════════════════════════════════
+window.exportPortfolio = function() {
+  const blob=new Blob([JSON.stringify({...portfolio,exportedAt:new Date().toISOString(),version:'2.0'},null,2)],{type:'application/json'});
+  const a=document.createElement('a'),dateStr=new Date().toISOString().split('T')[0];
+  a.href=URL.createObjectURL(blob);a.download=`portfolio-backup-${dateStr}.json`;a.click();URL.revokeObjectURL(a.href);
+  toast('✅ Full portfolio backup exported!');
+};
+window.importPortfolio = function(event) {
+  const file=event.target.files[0];if(!file)return;
+  if(!confirm('⚠ This will replace your ENTIRE portfolio. Are you sure?')){event.target.value='';return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try {
+      const imp=JSON.parse(e.target.result);
+      if(!imp.projects)throw new Error();
+      portfolio={projects:imp.projects};
+      save();renderPortfolio();toast('✅ Portfolio restored!');
+    } catch(err){alert('❌ Invalid portfolio backup file.');}
+    event.target.value='';
+  };
+  reader.readAsText(file);
+};
+
+// ══════════════════════════════════════════════════════════
+// DIRECTOR SUMMARY
+// ══════════════════════════════════════════════════════════
+window.generateDirectorSummary = function() {
+  const proj=currentProject();if(!proj)return;
+  const u=proj.updates[0];
+  if(!u){alert('No weekly update available. Submit a weekly update first.');return;}
+  const wk=new Date(u.weekOf+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}),generated=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const RC={green:'#2a7a4b',amber:'#d4860a',red:'#c84b2f'},RB={green:'#e6f4ec',amber:'#fef6e4',red:'#fdecea'},RT={green:'ON TRACK',amber:'AT RISK',red:'OFF TRACK'};
+  let delRows='';
+  u.delUpdates.forEach(du=>{
+    const del=proj.deliverables.find(d=>d.id===du.id);if(!del)return;
+    const dueStr=del.due?new Date(del.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+    delRows+=`<tr><td style="padding:10px 12px;border-bottom:1px solid #eee;font-weight:600;">${esc(del.name)}</td><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#555;">${esc(del.owner)||'—'}</td><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#555;">${dueStr}</td><td style="padding:10px 12px;border-bottom:1px solid #eee;"><span style="background:${RB[du.rag]};color:${RC[du.rag]};padding:3px 10px;border-radius:2px;font-size:11px;font-weight:700;letter-spacing:0.08em;">${RT[du.rag]}</span></td><td style="padding:10px 12px;border-bottom:1px solid #eee;">${du.progress}%</td><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#555;font-size:13px;">${du.comment?esc(du.comment):'<em style="color:#aaa;">No comment</em>'}</td></tr>`;
+  });
+  document.getElementById('director-print-area').innerHTML=`<div style="font-family:Georgia,serif;color:#111;max-width:900px;margin:0 auto;"><div style="border-bottom:3px solid #1a1612;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;"><div><div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#888;margin-bottom:6px;">Project Status Report — For Director of Projects</div><div style="font-size:28px;font-weight:700;letter-spacing:-0.02em;">${esc(proj.name)}</div>${proj.client?`<div style="font-size:14px;color:#888;margin-top:2px;">${esc(proj.client)}</div>`:''}<div style="font-size:14px;color:#555;margin-top:4px;">Week of ${wk}</div></div><div style="text-align:right;"><div style="background:${RB[u.overallRag]};border:2px solid ${RC[u.overallRag]};color:${RC[u.overallRag]};padding:10px 20px;border-radius:4px;font-size:14px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Overall: ${RT[u.overallRag]}</div><div style="font-size:11px;color:#aaa;margin-top:6px;">Generated ${generated}</div></div></div>${u.execSummary?`<div style="background:#f9f9f9;border-left:4px solid #1a1612;padding:16px 20px;margin-bottom:24px;border-radius:0 4px 4px 0;"><div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#888;margin-bottom:8px;">Executive Summary</div><div style="font-size:15px;line-height:1.7;">${esc(u.execSummary)}</div></div>`:''}<div style="margin-bottom:24px;"><div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#888;margin-bottom:12px;">Deliverable Status</div><table style="width:100%;border-collapse:collapse;font-size:14px;"><thead><tr style="background:#f5f0e8;"><th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd;">Deliverable</th><th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd;">Owner</th><th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd;">Due</th><th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd;">Status</th><th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd;">Progress</th><th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd;">This Week</th></tr></thead><tbody>${delRows}</tbody></table></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">${u.decisions?`<div style="background:#fffbf0;border:1px solid #f5dfa0;padding:16px;border-radius:4px;"><div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#d4860a;margin-bottom:8px;font-weight:700;">🔑 Decisions Needed</div><div style="font-size:14px;line-height:1.7;">${esc(u.decisions)}</div></div>`:'<div></div>'}${u.risks?`<div style="background:#fff8f8;border:1px solid #f5c4be;padding:16px;border-radius:4px;"><div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#c84b2f;margin-bottom:8px;font-weight:700;">⚠ Risks &amp; Issues</div><div style="font-size:14px;line-height:1.7;">${esc(u.risks)}</div></div>`:'<div></div>'}</div>${u.nextWeek?`<div style="border-top:1px solid #ddd;padding-top:16px;"><div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#888;margin-bottom:8px;">→ Next Week's Focus</div><div style="font-size:14px;line-height:1.7;">${esc(u.nextWeek)}</div></div>`:''}<div style="margin-top:40px;padding-top:12px;border-top:1px solid #eee;font-size:11px;color:#bbb;display:flex;justify-content:space-between;"><span>Prepared by Project Manager</span><span>Confidential — Director of Projects</span></div></div>`;
+  window.print();
+};
+
+// ══════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════
+function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function ragLabel(r){return r==='red'?'Off Track':r==='amber'?'At Risk':'On Track';}
+
+// ── INITIAL RENDER ──
+goHome();
+renderPortfolio();
+</script>
+</body>
+</html>
