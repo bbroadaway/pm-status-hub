@@ -4,18 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portfolio Status Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+
 <style>
   :root { --ink:#1a1612;--paper:#f5f0e8;--cream:#ede7d9;--rule:#c9bfad;--accent:#c84b2f;--amber:#d4860a;--green:#2a7a4b;--red:#c84b2f;--muted:#7a7060;--card:#faf7f2; }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'DM Mono',monospace;background:var(--paper);color:var(--ink);min-height:100vh;}
+  body{font-family:'Aptos',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
   header{background:var(--ink);color:var(--paper);}
   .header-inner{max-width:1100px;margin:0 auto;padding:24px 32px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;}
-  .brand h1{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:700;letter-spacing:-0.02em;line-height:1;}
+  .brand h1{font-family:'Aptos',sans-serif;font-size:2.2rem;font-weight:700;line-height:1;}
   .brand p{font-size:.72rem;opacity:.55;margin-top:6px;letter-spacing:.12em;text-transform:uppercase;}
   .header-right{text-align:right;font-size:.72rem;color:rgba(245,240,232,.55);}
   .header-right span{display:block;margin-top:4px;}
-  .back-btn{background:rgba(245,240,232,.12);border:1px solid rgba(245,240,232,.25);color:var(--paper);font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:6px 16px;border-radius:2px;cursor:pointer;transition:background .15s;display:none;}
+  .back-btn{background:rgba(245,240,232,.12);border:1px solid rgba(245,240,232,.25);color:var(--paper);font-family:'Aptos',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:6px 16px;border-radius:2px;cursor:pointer;transition:background .15s;display:none;}
   .back-btn:hover{background:rgba(245,240,232,.2);}
   .breadcrumb{font-size:.72rem;color:rgba(245,240,232,.5);margin-top:8px;display:none;}
   .breadcrumb span{color:rgba(245,240,232,.85);}
@@ -28,12 +28,12 @@
   main{max-width:1100px;margin:0 auto;padding:32px;}
   #portfolio-home{display:block;}
   .portfolio-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
-  .portfolio-title{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;}
+  .portfolio-title{font-family:'Aptos',sans-serif;font-size:1.6rem;font-weight:700;}
   .portfolio-subtitle{font-size:.72rem;color:var(--muted);margin-top:4px;}
   .projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:32px;}
   .project-card{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:22px 24px;cursor:pointer;transition:border-color .15s,box-shadow .15s;position:relative;}
   .project-card:hover{border-color:var(--ink);box-shadow:0 4px 16px rgba(26,22,18,.1);}
-  .pc-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;margin-bottom:6px;padding-right:32px;}
+  .pc-name{font-family:'Aptos',sans-serif;font-size:1.1rem;font-weight:600;margin-bottom:6px;padding-right:32px;}
   .pc-meta{font-size:.7rem;color:var(--muted);margin-bottom:14px;}
   .pc-rag-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
   .pc-rag-chip{font-size:.65rem;padding:3px 10px;border-radius:2px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;}
@@ -52,9 +52,9 @@
   .section{display:none;}
   .section.active{display:block;}
   .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
-  .section-title{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:600;}
+  .section-title{font-family:'Aptos',sans-serif;font-size:1.3rem;font-weight:600;}
   .btn-group{display:flex;gap:8px;flex-wrap:wrap;}
-  .btn{background:var(--ink);color:var(--paper);border:none;padding:8px 20px;font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:opacity .15s;white-space:nowrap;}
+  .btn{background:var(--ink);color:var(--paper);border:none;padding:8px 20px;font-family:'Aptos',sans-serif;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:opacity .15s;white-space:nowrap;}
   .btn:hover{opacity:.8;}
   .btn.secondary{background:transparent;color:var(--ink);border:1px solid var(--rule);}
   .btn.accent{background:var(--accent);}
@@ -62,7 +62,7 @@
   .dashboard-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:32px;}
   .stat-card{background:var(--card);border:1px solid var(--rule);padding:20px 24px;border-radius:4px;}
   .stat-card .label{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
-  .stat-card .value{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;line-height:1;}
+  .stat-card .value{font-family:'Aptos',sans-serif;font-size:2.4rem;font-weight:700;line-height:1;}
   .rag-summary{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;}
   .rag-pill{padding:6px 18px;border-radius:2px;font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;}
   .rag-pill.red{background:#fdecea;color:var(--red);border:1px solid #f5c4be;}
@@ -81,10 +81,10 @@
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(26,22,18,.55);z-index:100;align-items:center;justify-content:center;}
   .modal-overlay.open{display:flex;}
   .modal{background:var(--paper);border:1px solid var(--rule);border-radius:4px;padding:32px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 16px 48px rgba(26,22,18,.2);}
-  .modal h2{font-family:'Fraunces',serif;font-size:1.3rem;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--rule);}
+  .modal h2{font-family:'Aptos',sans-serif;font-size:1.3rem;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--rule);}
   .form-group{margin-bottom:18px;}
   label{display:block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
-  input[type=text],input[type=date],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--rule);border-radius:2px;background:var(--card);font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink);outline:none;transition:border-color .15s;}
+  input[type=text],input[type=date],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--rule);border-radius:2px;background:var(--card);font-family:'Aptos',sans-serif;font-size:.82rem;color:var(--ink);outline:none;transition:border-color .15s;}
   input:focus,select:focus,textarea:focus{border-color:var(--ink);}
   textarea{resize:vertical;min-height:70px;}
   .rag-select{display:flex;gap:10px;flex-wrap:wrap;}
@@ -98,7 +98,7 @@
   .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;padding-top:18px;border-top:1px solid var(--rule);}
   .update-entry{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:20px 24px;margin-bottom:12px;}
   .entry-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
-  .week-label{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;}
+  .week-label{font-family:'Aptos',sans-serif;font-size:1rem;font-weight:600;}
   .timestamp{font-size:.68rem;color:var(--muted);}
   .deliverable-row{display:flex;align-items:center;gap:10px;font-size:.8rem;padding:6px 0;border-bottom:1px solid var(--cream);}
   .deliverable-row:last-of-type{border-bottom:none;}
@@ -107,7 +107,7 @@
   .overall-note{margin-top:12px;padding-top:12px;border-top:1px solid var(--cream);font-size:.8rem;color:var(--muted);}
   .overall-note strong{color:var(--ink);}
   .week-form-card{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:28px 32px;margin-bottom:24px;}
-  .week-form-card h2{font-family:'Fraunces',serif;font-size:1.3rem;margin-bottom:6px;}
+  .week-form-card h2{font-family:'Aptos',sans-serif;font-size:1.3rem;margin-bottom:6px;}
   .subtitle{font-size:.72rem;color:var(--muted);margin-bottom:24px;}
   .del-update-row{background:var(--paper);border:1px solid var(--cream);border-radius:3px;padding:16px;margin-bottom:10px;}
   .del-title{font-weight:500;margin-bottom:10px;font-size:.85rem;display:flex;align-items:center;gap:8px;}
@@ -147,10 +147,10 @@
   .oi-priority.low{background:#e6f4ec;color:var(--green);}
   .resolved-note{font-size:.75rem;color:var(--green);margin-top:6px;font-style:italic;}
   .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-  .filter-btn{padding:5px 14px;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--rule);border-radius:2px;cursor:pointer;background:transparent;color:var(--muted);font-family:'DM Mono',monospace;transition:all .15s;}
+  .filter-btn{padding:5px 14px;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--rule);border-radius:2px;cursor:pointer;background:transparent;color:var(--muted);font-family:'Aptos',sans-serif;transition:all .15s;}
   .filter-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
   .data-panel{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:24px;margin-bottom:20px;}
-  .data-panel h3{font-family:'Fraunces',serif;font-size:1.05rem;margin-bottom:8px;}
+  .data-panel h3{font-family:'Aptos',sans-serif;font-size:1.05rem;margin-bottom:8px;}
   .data-panel p{font-size:.78rem;color:var(--muted);margin-bottom:14px;line-height:1.7;}
   .data-panel .actions{display:flex;gap:10px;flex-wrap:wrap;}
   .toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:var(--paper);padding:12px 20px;border-radius:4px;font-size:.78rem;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
@@ -647,7 +647,7 @@ window.generateDirectorSummary=function(){
   u.delUpdates.forEach(du=>{const del=proj.deliverables.find(d=>d.id===du.id);if(!del)return;const dueStr=del.due?new Date(del.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';delRows+=`<tr><td style="padding:10px 12px;border-bottom:1px solid #eee;font-weight:600">${esc(del.name)}</td><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#555">${esc(del.owner)||'—'}</td><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#555">${dueStr}</td><td style="padding:10px 12px;border-bottom:1px solid #eee"><span style="background:${RB[du.rag]};color:${RC[du.rag]};padding:3px 10px;border-radius:2px;font-size:11px;font-weight:700;letter-spacing:.08em">${RT[du.rag]}</span></td><td style="padding:10px 12px;border-bottom:1px solid #eee">${du.progress}%</td><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#555;font-size:13px">${du.comment?esc(du.comment):'<em style="color:#aaa">No comment</em>'}</td></tr>`;});
   const openOIs=(proj.openItems||[]).filter(i=>!i.resolved);
   const oiRows=openOIs.map(i=>`<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;font-weight:600">${oiLabel(i.type)}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:13px">${esc(i.desc)}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;color:#555">${esc(i.owner)||'—'}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:11px;text-transform:uppercase;font-weight:700;color:${i.priority==='high'?'#c84b2f':i.priority==='medium'?'#d4860a':'#2a7a4b'}">${i.priority}</td></tr>`).join('');
-  document.getElementById('director-print-area').innerHTML=`<div style="font-family:Georgia,serif;color:#111;max-width:900px;margin:0 auto"><div style="border-bottom:3px solid #1a1612;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px"><div><div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:6px">Project Status Report — For Director of Projects</div><div style="font-size:28px;font-weight:700;letter-spacing:-.02em">${esc(proj.name)}</div>${proj.client?`<div style="font-size:14px;color:#888;margin-top:2px">${esc(proj.client)}</div>`:''}<div style="font-size:14px;color:#555;margin-top:4px">Week of ${wk}</div></div><div style="text-align:right"><div style="background:${RB[u.overallRag]};border:2px solid ${RC[u.overallRag]};color:${RC[u.overallRag]};padding:10px 20px;border-radius:4px;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase">Overall: ${RT[u.overallRag]}</div><div style="font-size:11px;color:#aaa;margin-top:6px">Generated ${gen}</div></div></div>${u.execSummary?`<div style="background:#f9f9f9;border-left:4px solid #1a1612;padding:16px 20px;margin-bottom:24px;border-radius:0 4px 4px 0"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:8px">Executive Summary</div><div style="font-size:15px;line-height:1.7">${esc(u.execSummary)}</div></div>`:''}<div style="margin-bottom:24px"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:12px">Deliverable Status</div><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#f5f0e8"><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Deliverable</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Owner</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Due</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Status</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Progress</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">This Week</th></tr></thead><tbody>${delRows}</tbody></table></div>${openOIs.length?`<div style="margin-bottom:24px"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c84b2f;margin-bottom:12px">Open Items Requiring Attention (${openOIs.length})</div><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#fdecea"><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Type</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Description</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Owner</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Priority</th></tr></thead><tbody>${oiRows}</tbody></table></div>`:''}<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">${u.decisions&&!openOIs.length?`<div style="background:#fffbf0;border:1px solid #f5dfa0;padding:16px;border-radius:4px"><div style="font-size:11px;text-transform:uppercase;color:#d4860a;margin-bottom:8px;font-weight:700">🔑 Decisions Needed</div><div style="font-size:14px;line-height:1.7">${esc(u.decisions)}</div></div>`:'<div></div>'}${u.risks&&!openOIs.length?`<div style="background:#fff8f8;border:1px solid #f5c4be;padding:16px;border-radius:4px"><div style="font-size:11px;text-transform:uppercase;color:#c84b2f;margin-bottom:8px;font-weight:700">⚠ Risks &amp; Issues</div><div style="font-size:14px;line-height:1.7">${esc(u.risks)}</div></div>`:'<div></div>'}</div>${u.nextWeek?`<div style="border-top:1px solid #ddd;padding-top:16px"><div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:8px">→ Next Week's Focus</div><div style="font-size:14px;line-height:1.7">${esc(u.nextWeek)}</div></div>`:''}<div style="margin-top:40px;padding-top:12px;border-top:1px solid #eee;font-size:11px;color:#bbb;display:flex;justify-content:space-between"><span>Prepared by Project Manager</span><span>Confidential — Director of Projects</span></div></div>`;
+  document.getElementById('director-print-area').innerHTML=`<div style="font-family:'Aptos',sans-serif;color:#111;max-width:900px;margin:0 auto"><div style="border-bottom:3px solid #1a1612;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px"><div><div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:6px">Project Status Report — For Director of Projects</div><div style="font-size:28px;font-weight:700;letter-spacing:-.02em">${esc(proj.name)}</div>${proj.client?`<div style="font-size:14px;color:#888;margin-top:2px">${esc(proj.client)}</div>`:''}<div style="font-size:14px;color:#555;margin-top:4px">Week of ${wk}</div></div><div style="text-align:right"><div style="background:${RB[u.overallRag]};border:2px solid ${RC[u.overallRag]};color:${RC[u.overallRag]};padding:10px 20px;border-radius:4px;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase">Overall: ${RT[u.overallRag]}</div><div style="font-size:11px;color:#aaa;margin-top:6px">Generated ${gen}</div></div></div>${u.execSummary?`<div style="background:#f9f9f9;border-left:4px solid #1a1612;padding:16px 20px;margin-bottom:24px;border-radius:0 4px 4px 0"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:8px">Executive Summary</div><div style="font-size:15px;line-height:1.7">${esc(u.execSummary)}</div></div>`:''}<div style="margin-bottom:24px"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:12px">Deliverable Status</div><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#f5f0e8"><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Deliverable</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Owner</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Due</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Status</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Progress</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">This Week</th></tr></thead><tbody>${delRows}</tbody></table></div>${openOIs.length?`<div style="margin-bottom:24px"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c84b2f;margin-bottom:12px">Open Items Requiring Attention (${openOIs.length})</div><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#fdecea"><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Type</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Description</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Owner</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Priority</th></tr></thead><tbody>${oiRows}</tbody></table></div>`:''}<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">${u.decisions&&!openOIs.length?`<div style="background:#fffbf0;border:1px solid #f5dfa0;padding:16px;border-radius:4px"><div style="font-size:11px;text-transform:uppercase;color:#d4860a;margin-bottom:8px;font-weight:700">🔑 Decisions Needed</div><div style="font-size:14px;line-height:1.7">${esc(u.decisions)}</div></div>`:'<div></div>'}${u.risks&&!openOIs.length?`<div style="background:#fff8f8;border:1px solid #f5c4be;padding:16px;border-radius:4px"><div style="font-size:11px;text-transform:uppercase;color:#c84b2f;margin-bottom:8px;font-weight:700">⚠ Risks &amp; Issues</div><div style="font-size:14px;line-height:1.7">${esc(u.risks)}</div></div>`:'<div></div>'}</div>${u.nextWeek?`<div style="border-top:1px solid #ddd;padding-top:16px"><div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:8px">→ Next Week's Focus</div><div style="font-size:14px;line-height:1.7">${esc(u.nextWeek)}</div></div>`:''}<div style="margin-top:40px;padding-top:12px;border-top:1px solid #eee;font-size:11px;color:#bbb;display:flex;justify-content:space-between"><span>Prepared by Project Manager</span><span>Confidential — Director of Projects</span></div></div>`;
   window.print();
 };
 
