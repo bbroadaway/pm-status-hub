@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -353,303 +352,306 @@ let resolvingId=null;
 
 function getProj(id){return portfolio.projects.find(p=>p.id===(id||currentProjectId));}
 function curProj(){return getProj(currentProjectId);}
-function save(){try{localStorage.setItem(‘psh_portfolio’,JSON.stringify(portfolio));}catch(e){}}
-function load(){try{const d=localStorage.getItem(‘psh_portfolio’);if(d)portfolio=JSON.parse(d);}catch(e){}}
-function esc(s){if(!s)return’’;return String(s).replace(/&/g,’&’).replace(/</g,’<’).replace(/>/g,’>’).replace(/”/g,’"’);}
-function ragLabel(r){return r===‘red’?‘Off Track’:r===‘amber’?‘At Risk’:‘On Track’;}
-function oiLabel(t){return t===‘decision’?‘Decision’:t===‘risk’?‘Risk’:‘Action’;}
-function toast(msg){const el=document.getElementById(‘toast’);el.textContent=msg;el.classList.add(‘show’);setTimeout(()=>el.classList.remove(‘show’),3000);}
-function getNearestMonday(){const d=new Date(),day=d.getDay();d.setDate(d.getDate()-day+(day===0?-6:1));return d.toISOString().split(‘T’)[0];}
+function save(){try{localStorage.setItem('psh_portfolio',JSON.stringify(portfolio));}catch(e){}}
+function load(){try{const d=localStorage.getItem('psh_portfolio');if(d)portfolio=JSON.parse(d);}catch(e){}}
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function ragLabel(r){return r==='red'?'Off Track':r==='amber'?'At Risk':'On Track';}
+function oiLabel(t){return t==='decision'?'Decision':t==='risk'?'Risk':'Action';}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
+function getNearestMonday(){const d=new Date(),day=d.getDay();d.setDate(d.getDate()-day+(day===0?-6:1));return d.toISOString().split('T')[0];}
 
 load();
-document.getElementById(‘currentDate’).textContent=new Date().toLocaleDateString(‘en-US’,{weekday:‘short’,year:‘numeric’,month:‘short’,day:‘numeric’});
+document.getElementById('currentDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
 
 // PORTFOLIO HOME
 function goHome(){
-currentProjectId=null;
-document.getElementById(‘portfolio-home’).style.display=‘block’;
-document.getElementById(‘project-view’).style.display=‘none’;
-document.getElementById(‘project-nav’).style.display=‘none’;
-document.getElementById(‘backBtn’).style.display=‘none’;
-document.getElementById(‘breadcrumb’).style.display=‘none’;
-document.getElementById(‘header-subtitle’).textContent=‘Project Manager Dashboard’;
-renderPortfolio();
+  currentProjectId=null;
+  document.getElementById('portfolio-home').style.display='block';
+  document.getElementById('project-view').style.display='none';
+  document.getElementById('project-nav').style.display='none';
+  document.getElementById('backBtn').style.display='none';
+  document.getElementById('breadcrumb').style.display='none';
+  document.getElementById('header-subtitle').textContent='Project Manager Dashboard';
+  renderPortfolio();
 }
 function renderPortfolio(){
-const grid=document.getElementById(‘projects-grid’);
-const projects=portfolio.projects;
-document.getElementById(‘portfolio-meta’).textContent=`${projects.length} project${projects.length!==1?'s':''}`;
-grid.innerHTML=’’;
-projects.forEach(proj=>{
-const dels=proj.deliverables||[];
-const lu=(proj.updates||[])[0];
-const openOIs=(proj.openItems||[]).filter(i=>!i.resolved).length;
-const greens=dels.filter(d=>d.rag===‘green’).length;
-const ambers=dels.filter(d=>d.rag===‘amber’).length;
-const reds=dels.filter(d=>d.rag===‘red’).length;
-const lastUpd=lu?new Date(lu.submittedAt).toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’}):‘No updates yet’;
-const card=document.createElement(‘div’);card.className=‘project-card’;
-card.onclick=(e)=>{if(!e.target.classList.contains(‘pc-del-btn’))openProject(proj.id);};
-card.innerHTML=`<button class="pc-del-btn" onclick="deleteProject('${proj.id}')">🗑</button> <div class="pc-name">${esc(proj.name)}</div> <div class="pc-meta">${proj.client?esc(proj.client)+' · ':''}${dels.length} deliverable${dels.length!==1?'s':''}${openOIs?` · <span style="color:var(--accent)">${openOIs} open item${openOIs!==1?‘s’:’’}</span>`:''}</div> <div class="pc-rag-row"><span class="pc-rag-chip green">🟢 ${greens}</span><span class="pc-rag-chip amber">🟡 ${ambers}</span><span class="pc-rag-chip red">🔴 ${reds}</span></div> <div class="pc-footer">${lu?`<div class="pc-overall"><span class="rag-dot ${lu.overallRag}"></span>Overall: ${ragLabel(lu.overallRag)}</div>`:'<div style="color:var(--muted);font-style:italic">No status yet</div>'}<div>Updated ${lastUpd}</div></div>`;
-grid.appendChild(card);
-});
-const add=document.createElement(‘div’);add.className=‘add-project-card’;add.onclick=openNewProjModal;
-add.innerHTML=’<span class="plus">+</span><span>Add New Project</span>’;grid.appendChild(add);
+  const grid=document.getElementById('projects-grid');
+  const projects=portfolio.projects;
+  document.getElementById('portfolio-meta').textContent=`${projects.length} project${projects.length!==1?'s':''}`;
+  grid.innerHTML='';
+  projects.forEach(proj=>{
+    const dels=proj.deliverables||[];
+    const lu=(proj.updates||[])[0];
+    const openOIs=(proj.openItems||[]).filter(i=>!i.resolved).length;
+    const greens=dels.filter(d=>d.rag==='green').length;
+    const ambers=dels.filter(d=>d.rag==='amber').length;
+    const reds=dels.filter(d=>d.rag==='red').length;
+    const lastUpd=lu?new Date(lu.submittedAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'No updates yet';
+    const card=document.createElement('div');card.className='project-card';
+    card.onclick=(e)=>{if(!e.target.classList.contains('pc-del-btn'))openProject(proj.id);};
+    card.innerHTML=`<button class="pc-del-btn" onclick="deleteProject('${proj.id}')">🗑</button>
+      <div class="pc-name">${esc(proj.name)}</div>
+      <div class="pc-meta">${proj.client?esc(proj.client)+' · ':''}${dels.length} deliverable${dels.length!==1?'s':''}${openOIs?` · <span style="color:var(--accent)">${openOIs} open item${openOIs!==1?'s':''}</span>`:''}</div>
+      <div class="pc-rag-row"><span class="pc-rag-chip green">🟢 ${greens}</span><span class="pc-rag-chip amber">🟡 ${ambers}</span><span class="pc-rag-chip red">🔴 ${reds}</span></div>
+      <div class="pc-footer">${lu?`<div class="pc-overall"><span class="rag-dot ${lu.overallRag}"></span>Overall: ${ragLabel(lu.overallRag)}</div>`:'<div style="color:var(--muted);font-style:italic">No status yet</div>'}<div>Updated ${lastUpd}</div></div>`;
+    grid.appendChild(card);
+  });
+  const add=document.createElement('div');add.className='add-project-card';add.onclick=openNewProjModal;
+  add.innerHTML='<span class="plus">+</span><span>Add New Project</span>';grid.appendChild(add);
 }
 
 // PROJECT OPEN
 function openProject(id){
-currentProjectId=id;
-const proj=curProj();
-if(!proj.openItems)proj.openItems=[];
-document.getElementById(‘portfolio-home’).style.display=‘none’;
-document.getElementById(‘project-view’).style.display=‘block’;
-document.getElementById(‘project-nav’).style.display=‘block’;
-document.getElementById(‘backBtn’).style.display=‘inline-block’;
-document.getElementById(‘breadcrumb’).style.display=‘block’;
-document.getElementById(‘breadcrumb-name’).textContent=proj.name;
-document.getElementById(‘header-subtitle’).textContent=(proj.client?proj.client+’ · ‘:’’)+proj.name;
-document.querySelectorAll(’.tab’).forEach(t=>t.classList.remove(‘active’));
-document.querySelectorAll(’.section’).forEach(s=>s.classList.remove(‘active’));
-document.querySelector(’[data-tab=“dashboard”]’).classList.add(‘active’);
-document.getElementById(‘tab-dashboard’).classList.add(‘active’);
-document.getElementById(‘weekOf’).value=getNearestMonday();
-initRag(document.getElementById(‘overall-rag’));setRag(document.getElementById(‘overall-rag’),‘green’);
-[‘execSummary’,‘decisions’,‘risks’,‘nextWeek’].forEach(id=>{const el=document.getElementById(id);if(el)el.value=’’;});
-showDraftBadge(false);updateOiBadge();renderDashboard();
+  currentProjectId=id;
+  const proj=curProj();
+  if(!proj.openItems)proj.openItems=[];
+  document.getElementById('portfolio-home').style.display='none';
+  document.getElementById('project-view').style.display='block';
+  document.getElementById('project-nav').style.display='block';
+  document.getElementById('backBtn').style.display='inline-block';
+  document.getElementById('breadcrumb').style.display='block';
+  document.getElementById('breadcrumb-name').textContent=proj.name;
+  document.getElementById('header-subtitle').textContent=(proj.client?proj.client+' · ':'')+proj.name;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelector('[data-tab="dashboard"]').classList.add('active');
+  document.getElementById('tab-dashboard').classList.add('active');
+  document.getElementById('weekOf').value=getNearestMonday();
+  initRag(document.getElementById('overall-rag'));setRag(document.getElementById('overall-rag'),'green');
+  ['execSummary','decisions','risks','nextWeek'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  showDraftBadge(false);updateOiBadge();renderDashboard();
 }
-document.querySelectorAll(’.tab’).forEach(t=>{
-t.addEventListener(‘click’,()=>{
-document.querySelectorAll(’.tab’).forEach(x=>x.classList.remove(‘active’));
-document.querySelectorAll(’.section’).forEach(x=>x.classList.remove(‘active’));
-t.classList.add(‘active’);document.getElementById(‘tab-’+t.dataset.tab).classList.add(‘active’);
-if(t.dataset.tab===‘dashboard’)renderDashboard();
-if(t.dataset.tab===‘weekly’)renderWeeklyForm();
-if(t.dataset.tab===‘log’)renderLog();
-if(t.dataset.tab===‘deliverables’)renderDeliverables();
-if(t.dataset.tab===‘openitems’)renderOiList();
-});
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+    if(t.dataset.tab==='dashboard')renderDashboard();
+    if(t.dataset.tab==='weekly')renderWeeklyForm();
+    if(t.dataset.tab==='log')renderLog();
+    if(t.dataset.tab==='deliverables')renderDeliverables();
+    if(t.dataset.tab==='openitems')renderOiList();
+  });
 });
 
 // NEW PROJECT
-function openNewProjModal(){[‘np-name’,‘np-client’,‘np-desc’].forEach(id=>document.getElementById(id).value=’’);document.getElementById(‘new-project-modal’).classList.add(‘open’);setTimeout(()=>document.getElementById(‘np-name’).focus(),100);}
-function closeNewProjModal(){document.getElementById(‘new-project-modal’).classList.remove(‘open’);}
+function openNewProjModal(){['np-name','np-client','np-desc'].forEach(id=>document.getElementById(id).value='');document.getElementById('new-project-modal').classList.add('open');setTimeout(()=>document.getElementById('np-name').focus(),100);}
+function closeNewProjModal(){document.getElementById('new-project-modal').classList.remove('open');}
 function createProject(){
-const name=document.getElementById(‘np-name’).value.trim();if(!name){alert(‘Project name is required.’);return;}
-const proj={id:Date.now().toString(),name,client:document.getElementById(‘np-client’).value.trim(),desc:document.getElementById(‘np-desc’).value.trim(),deliverables:[],updates:[],openItems:[]};
-portfolio.projects.push(proj);save();closeNewProjModal();openProject(proj.id);toast(‘✅ Project created!’);
+  const name=document.getElementById('np-name').value.trim();if(!name){alert('Project name is required.');return;}
+  const proj={id:Date.now().toString(),name,client:document.getElementById('np-client').value.trim(),desc:document.getElementById('np-desc').value.trim(),deliverables:[],updates:[],openItems:[]};
+  portfolio.projects.push(proj);save();closeNewProjModal();openProject(proj.id);toast('✅ Project created!');
 }
 
 // RAG
 function initRag(c){
-c.querySelectorAll(’.rag-option’).forEach(o=>{const n=o.cloneNode(true);o.parentNode.replaceChild(n,o);});
-c.querySelectorAll(’.rag-option’).forEach(o=>o.addEventListener(‘click’,()=>{c.querySelectorAll(’.rag-option’).forEach(x=>x.classList.remove(‘selected’));o.classList.add(‘selected’);}));
+  c.querySelectorAll('.rag-option').forEach(o=>{const n=o.cloneNode(true);o.parentNode.replaceChild(n,o);});
+  c.querySelectorAll('.rag-option').forEach(o=>o.addEventListener('click',()=>{c.querySelectorAll('.rag-option').forEach(x=>x.classList.remove('selected'));o.classList.add('selected');}));
 }
-function getRag(c){const s=c.querySelector(’.rag-option.selected’);return s?s.dataset.val:‘green’;}
-function setRag(c,v){c.querySelectorAll(’.rag-option’).forEach(o=>o.classList.toggle(‘selected’,o.dataset.val===v));}
+function getRag(c){const s=c.querySelector('.rag-option.selected');return s?s.dataset.val:'green';}
+function setRag(c,v){c.querySelectorAll('.rag-option').forEach(o=>o.classList.toggle('selected',o.dataset.val===v));}
 
 // DELIVERABLES
 let editingDelId=null;
-document.getElementById(‘addDeliverableBtn’).addEventListener(‘click’,()=>{
-editingDelId=null;document.getElementById(‘modal-title’).textContent=‘Add Deliverable’;
-[‘del-name’,‘del-owner’,‘del-due’,‘del-progress’,‘del-notes’].forEach(id=>document.getElementById(id).value=’’);
-initRag(document.getElementById(‘del-rag’));setRag(document.getElementById(‘del-rag’),‘green’);
-document.getElementById(‘del-modal’).classList.add(‘open’);
+document.getElementById('addDeliverableBtn').addEventListener('click',()=>{
+  editingDelId=null;document.getElementById('modal-title').textContent='Add Deliverable';
+  ['del-name','del-owner','del-due','del-progress','del-notes'].forEach(id=>document.getElementById(id).value='');
+  initRag(document.getElementById('del-rag'));setRag(document.getElementById('del-rag'),'green');
+  document.getElementById('del-modal').classList.add('open');
 });
-document.getElementById(‘closeDelModal’).addEventListener(‘click’,()=>document.getElementById(‘del-modal’).classList.remove(‘open’));
-document.getElementById(‘saveDeliverable’).addEventListener(‘click’,()=>{
-const name=document.getElementById(‘del-name’).value.trim();if(!name){alert(‘Name is required.’);return;}
-const proj=curProj();if(!proj)return;
-const item={id:editingDelId||Date.now().toString(),name,owner:document.getElementById(‘del-owner’).value.trim(),due:document.getElementById(‘del-due’).value,rag:getRag(document.getElementById(‘del-rag’)),progress:Math.min(100,Math.max(0,parseInt(document.getElementById(‘del-progress’).value)||0)),notes:document.getElementById(‘del-notes’).value.trim()};
-if(editingDelId){const i=proj.deliverables.findIndex(d=>d.id===editingDelId);if(i>-1)proj.deliverables[i]=item;}else proj.deliverables.push(item);
-save();document.getElementById(‘del-modal’).classList.remove(‘open’);renderDeliverables();renderDashboard();toast(‘✅ Deliverable saved.’);
+document.getElementById('closeDelModal').addEventListener('click',()=>document.getElementById('del-modal').classList.remove('open'));
+document.getElementById('saveDeliverable').addEventListener('click',()=>{
+  const name=document.getElementById('del-name').value.trim();if(!name){alert('Name is required.');return;}
+  const proj=curProj();if(!proj)return;
+  const item={id:editingDelId||Date.now().toString(),name,owner:document.getElementById('del-owner').value.trim(),due:document.getElementById('del-due').value,rag:getRag(document.getElementById('del-rag')),progress:Math.min(100,Math.max(0,parseInt(document.getElementById('del-progress').value)||0)),notes:document.getElementById('del-notes').value.trim()};
+  if(editingDelId){const i=proj.deliverables.findIndex(d=>d.id===editingDelId);if(i>-1)proj.deliverables[i]=item;}else proj.deliverables.push(item);
+  save();document.getElementById('del-modal').classList.remove('open');renderDeliverables();renderDashboard();toast('✅ Deliverable saved.');
 });
 function renderDeliverables(){
-const proj=curProj();if(!proj)return;
-const tbody=document.getElementById(‘del-tbody’),empty=document.getElementById(‘del-empty’);
-tbody.innerHTML=’’;if(!proj.deliverables.length){empty.style.display=‘block’;return;}empty.style.display=‘none’;
-proj.deliverables.forEach(d=>{
-const dueStr=d.due?new Date(d.due+‘T00:00:00’).toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’,year:‘numeric’}):’—’;
-const bar=d.rag===‘red’?‘var(–red)’:d.rag===‘amber’?‘var(–amber)’:‘var(–green)’;
-const tr=document.createElement(‘tr’);
-tr.innerHTML=`<td><strong>${esc(d.name)}</strong>${d.notes?`<br><span style="font-size:.72rem;color:var(--muted)">${esc(d.notes)}</span>`:''}</td><td>${esc(d.owner)||'<span class="no-data">—</span>'}</td><td>${dueStr}</td><td><span class="rag-dot ${d.rag}"></span>${ragLabel(d.rag)}</td><td style="min-width:120px"><div style="font-size:.72rem;margin-bottom:4px">${d.progress}%</div><div class="progress-bar-wrap"><div class="progress-bar" style="width:${d.progress}%;background:${bar}"></div></div></td><td style="text-align:right;white-space:nowrap"><button class="delete-btn" onclick="editDel('${d.id}')">✏️</button><button class="delete-btn" onclick="deleteDel('${d.id}')">🗑</button></td>`;
-tbody.appendChild(tr);
-});
+  const proj=curProj();if(!proj)return;
+  const tbody=document.getElementById('del-tbody'),empty=document.getElementById('del-empty');
+  tbody.innerHTML='';if(!proj.deliverables.length){empty.style.display='block';return;}empty.style.display='none';
+  proj.deliverables.forEach(d=>{
+    const dueStr=d.due?new Date(d.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+    const bar=d.rag==='red'?'var(--red)':d.rag==='amber'?'var(--amber)':'var(--green)';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${esc(d.name)}</strong>${d.notes?`<br><span style="font-size:.72rem;color:var(--muted)">${esc(d.notes)}</span>`:''}</td><td>${esc(d.owner)||'<span class="no-data">—</span>'}</td><td>${dueStr}</td><td><span class="rag-dot ${d.rag}"></span>${ragLabel(d.rag)}</td><td style="min-width:120px"><div style="font-size:.72rem;margin-bottom:4px">${d.progress}%</div><div class="progress-bar-wrap"><div class="progress-bar" style="width:${d.progress}%;background:${bar}"></div></div></td><td style="text-align:right;white-space:nowrap"><button class="delete-btn" onclick="editDel('${d.id}')">✏️</button><button class="delete-btn" onclick="deleteDel('${d.id}')">🗑</button></td>`;
+    tbody.appendChild(tr);
+  });
 }
 window.editDel=function(id){
-const proj=curProj();if(!proj)return;const d=proj.deliverables.find(x=>x.id===id);if(!d)return;
-editingDelId=id;document.getElementById(‘modal-title’).textContent=‘Edit Deliverable’;
-document.getElementById(‘del-name’).value=d.name;document.getElementById(‘del-owner’).value=d.owner;document.getElementById(‘del-due’).value=d.due;document.getElementById(‘del-progress’).value=d.progress;document.getElementById(‘del-notes’).value=d.notes;
-initRag(document.getElementById(‘del-rag’));setRag(document.getElementById(‘del-rag’),d.rag);document.getElementById(‘del-modal’).classList.add(‘open’);
+  const proj=curProj();if(!proj)return;const d=proj.deliverables.find(x=>x.id===id);if(!d)return;
+  editingDelId=id;document.getElementById('modal-title').textContent='Edit Deliverable';
+  document.getElementById('del-name').value=d.name;document.getElementById('del-owner').value=d.owner;document.getElementById('del-due').value=d.due;document.getElementById('del-progress').value=d.progress;document.getElementById('del-notes').value=d.notes;
+  initRag(document.getElementById('del-rag'));setRag(document.getElementById('del-rag'),d.rag);document.getElementById('del-modal').classList.add('open');
 };
-window.deleteDel=function(id){if(!confirm(‘Delete this deliverable?’))return;const proj=curProj();if(!proj)return;proj.deliverables=proj.deliverables.filter(d=>d.id!==id);save();renderDeliverables();renderDashboard();};
+window.deleteDel=function(id){if(!confirm('Delete this deliverable?'))return;const proj=curProj();if(!proj)return;proj.deliverables=proj.deliverables.filter(d=>d.id!==id);save();renderDeliverables();renderDashboard();};
 
 // DRAFT
-function draftKey(){return’psh_draft_’+currentProjectId;}
+function draftKey(){return'psh_draft_'+currentProjectId;}
 function saveDraft(){
-if(!currentProjectId)return;
-const dr={weekOf:document.getElementById(‘weekOf’).value,overallRag:getRag(document.getElementById(‘overall-rag’)),execSummary:document.getElementById(‘execSummary’).value,decisions:document.getElementById(‘decisions’).value,risks:document.getElementById(‘risks’).value,nextWeek:document.getElementById(‘nextWeek’).value,deliverables:[]};
-document.querySelectorAll(’.del-update-row’).forEach(row=>{dr.deliverables.push({id:row.dataset.id,rag:getRag(row.querySelector(’.del-rag-inline’)),progress:row.querySelector(’.del-prog-input’).value,comment:row.querySelector(’.del-comment-input’).value});});
-try{localStorage.setItem(draftKey(),JSON.stringify(dr));}catch(e){}showDraftBadge(true);
+  if(!currentProjectId)return;
+  const dr={weekOf:document.getElementById('weekOf').value,overallRag:getRag(document.getElementById('overall-rag')),execSummary:document.getElementById('execSummary').value,decisions:document.getElementById('decisions').value,risks:document.getElementById('risks').value,nextWeek:document.getElementById('nextWeek').value,deliverables:[]};
+  document.querySelectorAll('.del-update-row').forEach(row=>{dr.deliverables.push({id:row.dataset.id,rag:getRag(row.querySelector('.del-rag-inline')),progress:row.querySelector('.del-prog-input').value,comment:row.querySelector('.del-comment-input').value});});
+  try{localStorage.setItem(draftKey(),JSON.stringify(dr));}catch(e){}showDraftBadge(true);
 }
 function loadDraft(){try{return JSON.parse(localStorage.getItem(draftKey()));}catch(e){return null;}}
 function clearDraft(){
-try{localStorage.removeItem(draftKey());}catch(e){}showDraftBadge(false);
-document.getElementById(‘weekOf’).value=getNearestMonday();setRag(document.getElementById(‘overall-rag’),‘green’);
-[‘execSummary’,‘decisions’,‘risks’,‘nextWeek’].forEach(id=>document.getElementById(id).value=’’);
-document.querySelectorAll(’.del-update-row’).forEach(row=>{const proj=curProj();const del=proj?proj.deliverables.find(d=>d.id===row.dataset.id):null;setRag(row.querySelector(’.del-rag-inline’),del?del.rag:‘green’);row.querySelector(’.del-prog-input’).value=del?del.progress:0;row.querySelector(’.del-comment-input’).value=’’;});
-toast(‘Draft discarded.’);
+  try{localStorage.removeItem(draftKey());}catch(e){}showDraftBadge(false);
+  document.getElementById('weekOf').value=getNearestMonday();setRag(document.getElementById('overall-rag'),'green');
+  ['execSummary','decisions','risks','nextWeek'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('.del-update-row').forEach(row=>{const proj=curProj();const del=proj?proj.deliverables.find(d=>d.id===row.dataset.id):null;setRag(row.querySelector('.del-rag-inline'),del?del.rag:'green');row.querySelector('.del-prog-input').value=del?del.progress:0;row.querySelector('.del-comment-input').value='';});
+  toast('Draft discarded.');
 }
-function showDraftBadge(show){const el=document.getElementById(‘draft-indicator’);if(el)el.style.display=show?‘flex’:‘none’;}
+function showDraftBadge(show){const el=document.getElementById('draft-indicator');if(el)el.style.display=show?'flex':'none';}
 function attachDraftListeners(){
-[‘weekOf’,‘execSummary’,‘decisions’,‘risks’,‘nextWeek’].forEach(id=>{const el=document.getElementById(id);if(el){const n=el.cloneNode(true);el.parentNode.replaceChild(n,el);n.addEventListener(‘input’,saveDraft);}});
-const ragEl=document.getElementById(‘overall-rag’);ragEl.addEventListener(‘click’,()=>setTimeout(saveDraft,10));
+  ['weekOf','execSummary','decisions','risks','nextWeek'].forEach(id=>{const el=document.getElementById(id);if(el){const n=el.cloneNode(true);el.parentNode.replaceChild(n,el);n.addEventListener('input',saveDraft);}});
+  const ragEl=document.getElementById('overall-rag');ragEl.addEventListener('click',()=>setTimeout(saveDraft,10));
 }
 
 // WEEKLY FORM
 function renderWeeklyForm(){
-const proj=curProj();if(!proj)return;if(!proj.openItems)proj.openItems=[];
-const openOIs=proj.openItems.filter(i=>!i.resolved);
-const rem=document.getElementById(‘oi-reminder’);
-if(openOIs.length){
-rem.style.display=‘block’;document.getElementById(‘oi-reminder-count’).textContent=openOIs.length;
-const body=document.getElementById(‘oi-reminder-body’);body.innerHTML=’’;
-openOIs.forEach(item=>{const row=document.createElement(‘div’);row.className=‘oi-mini-row’;row.innerHTML=`<span class="oi-type-badge ${item.type}">${oiLabel(item.type)}</span><span class="oi-mini-text">${esc(item.desc)}</span><span class="oi-mini-meta">${item.owner?esc(item.owner)+' · ':''}${item.priority}</span>`;body.appendChild(row);});
-}else{rem.style.display=‘none’;}
-const container=document.getElementById(‘del-update-rows’);
-if(!proj.deliverables.length){container.innerHTML=’<div class="empty-state"><span>📦</span>Add deliverables in the <strong>Deliverables</strong> tab first.</div>’;showDraftBadge(false);return;}
-container.innerHTML=’’;
-const dr=loadDraft();
-if(dr){document.getElementById(‘weekOf’).value=dr.weekOf||getNearestMonday();setRag(document.getElementById(‘overall-rag’),dr.overallRag||‘green’);document.getElementById(‘execSummary’).value=dr.execSummary||’’;document.getElementById(‘decisions’).value=dr.decisions||’’;document.getElementById(‘risks’).value=dr.risks||’’;document.getElementById(‘nextWeek’).value=dr.nextWeek||’’;showDraftBadge(true);}else{showDraftBadge(false);}
-proj.deliverables.forEach(d=>{
-const dd=dr?(dr.deliverables||[]).find(x=>x.id===d.id):null;
-const rv=dd?dd.rag:d.rag,pv=dd?dd.progress:d.progress,cv=dd?(dd.comment||’’):’’;
-const dueStr=d.due?`Due ${new Date(d.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}`:’’;
-const div=document.createElement(‘div’);div.className=‘del-update-row’;div.dataset.id=d.id;
-div.innerHTML=`<div class="del-title"><span class="rag-dot ${d.rag}"></span>${esc(d.name)}${dueStr?`<span class="due-tag">(${dueStr})</span>`:''}</div><div class="del-update-fields"><div><label>Status</label><div class="rag-select del-rag-inline" style="flex-direction:column;gap:6px"><div class="rag-option ${rv==='green'?'selected':''}" data-val="green">🟢 Green</div><div class="rag-option ${rv==='amber'?'selected':''}" data-val="amber">🟡 Amber</div><div class="rag-option ${rv==='red'?'selected':''}" data-val="red">🔴 Red</div></div></div><div><label>Progress %</label><input type="text" class="del-prog-input" value="${esc(String(pv))}" style="margin-bottom:10px"><label>Comment / Update</label><textarea class="del-comment-input" rows="2" placeholder="What happened this week?">${esc(cv)}</textarea></div></div>`;
-container.appendChild(div);
-const ri=div.querySelector(’.del-rag-inline’);initRag(ri);ri.addEventListener(‘click’,()=>setTimeout(saveDraft,10));
-div.querySelector(’.del-prog-input’).addEventListener(‘input’,saveDraft);div.querySelector(’.del-comment-input’).addEventListener(‘input’,saveDraft);
-});
-attachDraftListeners();
+  const proj=curProj();if(!proj)return;if(!proj.openItems)proj.openItems=[];
+  const openOIs=proj.openItems.filter(i=>!i.resolved);
+  const rem=document.getElementById('oi-reminder');
+  if(openOIs.length){
+    rem.style.display='block';document.getElementById('oi-reminder-count').textContent=openOIs.length;
+    const body=document.getElementById('oi-reminder-body');body.innerHTML='';
+    openOIs.forEach(item=>{const row=document.createElement('div');row.className='oi-mini-row';row.innerHTML=`<span class="oi-type-badge ${item.type}">${oiLabel(item.type)}</span><span class="oi-mini-text">${esc(item.desc)}</span><span class="oi-mini-meta">${item.owner?esc(item.owner)+' · ':''}${item.priority}</span>`;body.appendChild(row);});
+  }else{rem.style.display='none';}
+  const container=document.getElementById('del-update-rows');
+  if(!proj.deliverables.length){container.innerHTML='<div class="empty-state"><span>📦</span>Add deliverables in the <strong>Deliverables</strong> tab first.</div>';showDraftBadge(false);return;}
+  container.innerHTML='';
+  const dr=loadDraft();
+  if(dr){document.getElementById('weekOf').value=dr.weekOf||getNearestMonday();setRag(document.getElementById('overall-rag'),dr.overallRag||'green');document.getElementById('execSummary').value=dr.execSummary||'';document.getElementById('decisions').value=dr.decisions||'';document.getElementById('risks').value=dr.risks||'';document.getElementById('nextWeek').value=dr.nextWeek||'';showDraftBadge(true);}else{showDraftBadge(false);}
+  proj.deliverables.forEach(d=>{
+    const dd=dr?(dr.deliverables||[]).find(x=>x.id===d.id):null;
+    const rv=dd?dd.rag:d.rag,pv=dd?dd.progress:d.progress,cv=dd?(dd.comment||''):'';
+    const dueStr=d.due?`Due ${new Date(d.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}`:'';
+    const div=document.createElement('div');div.className='del-update-row';div.dataset.id=d.id;
+    div.innerHTML=`<div class="del-title"><span class="rag-dot ${d.rag}"></span>${esc(d.name)}${dueStr?`<span class="due-tag">(${dueStr})</span>`:''}</div><div class="del-update-fields"><div><label>Status</label><div class="rag-select del-rag-inline" style="flex-direction:column;gap:6px"><div class="rag-option ${rv==='green'?'selected':''}" data-val="green">🟢 Green</div><div class="rag-option ${rv==='amber'?'selected':''}" data-val="amber">🟡 Amber</div><div class="rag-option ${rv==='red'?'selected':''}" data-val="red">🔴 Red</div></div></div><div><label>Progress %</label><input type="text" class="del-prog-input" value="${esc(String(pv))}" style="margin-bottom:10px"><label>Comment / Update</label><textarea class="del-comment-input" rows="2" placeholder="What happened this week?">${esc(cv)}</textarea></div></div>`;
+    container.appendChild(div);
+    const ri=div.querySelector('.del-rag-inline');initRag(ri);ri.addEventListener('click',()=>setTimeout(saveDraft,10));
+    div.querySelector('.del-prog-input').addEventListener('input',saveDraft);div.querySelector('.del-comment-input').addEventListener('input',saveDraft);
+  });
+  attachDraftListeners();
 }
-function toggleOiReminder(){const b=document.getElementById(‘oi-reminder-body’),ch=document.getElementById(‘oi-reminder-chevron’);const exp=b.classList.toggle(‘open’);ch.textContent=exp?‘▲ Hide’:‘▼ Show’;}
-document.getElementById(‘submitUpdateBtn’).addEventListener(‘click’,()=>{
-const proj=curProj();if(!proj)return;
-const weekOf=document.getElementById(‘weekOf’).value;if(!weekOf){alert(‘Please select a week.’);return;}
-if(!proj.openItems)proj.openItems=[];
-const delUpdates=[];
-document.querySelectorAll(’.del-update-row’).forEach(row=>{
-const id=row.dataset.id,rag=getRag(row.querySelector(’.del-rag-inline’)),prog=Math.min(100,Math.max(0,parseInt(row.querySelector(’.del-prog-input’).value)||0)),comment=row.querySelector(’.del-comment-input’).value.trim();
-delUpdates.push({id,rag,progress:prog,comment});const del=proj.deliverables.find(d=>d.id===id);if(del){del.rag=rag;del.progress=prog;}
-});
-const decisionsText=document.getElementById(‘decisions’).value.trim();
-const risksText=document.getElementById(‘risks’).value.trim();
-const wkLabel=new Date(weekOf+‘T00:00:00’).toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’});
-if(decisionsText)proj.openItems.push({id:Date.now()+’_d’,type:‘decision’,desc:decisionsText,owner:’’,priority:‘high’,due:’’,raisedDate:weekOf,raisedWeek:wkLabel,resolved:false,resolvedNote:’’});
-if(risksText)proj.openItems.push({id:(Date.now()+1)+’_r’,type:‘risk’,desc:risksText,owner:’’,priority:‘high’,due:’’,raisedDate:weekOf,raisedWeek:wkLabel,resolved:false,resolvedNote:’’});
-proj.updates.unshift({id:Date.now().toString(),weekOf,submittedAt:new Date().toISOString(),overallRag:getRag(document.getElementById(‘overall-rag’)),execSummary:document.getElementById(‘execSummary’).value.trim(),decisions:decisionsText,risks:risksText,nextWeek:document.getElementById(‘nextWeek’).value.trim(),delUpdates});
-save();try{localStorage.removeItem(draftKey());}catch(e){}showDraftBadge(false);
-[‘execSummary’,‘decisions’,‘risks’,‘nextWeek’].forEach(id=>document.getElementById(id).value=’’);
-updateOiBadge();toast(‘✅ Weekly update submitted!’);renderDashboard();renderDeliverables();
-document.querySelectorAll(’.tab’).forEach(t=>t.classList.remove(‘active’));document.querySelectorAll(’.section’).forEach(s=>s.classList.remove(‘active’));
-document.querySelector(’[data-tab=“log”]’).classList.add(‘active’);document.getElementById(‘tab-log’).classList.add(‘active’);renderLog();
+function toggleOiReminder(){const b=document.getElementById('oi-reminder-body'),ch=document.getElementById('oi-reminder-chevron');const exp=b.classList.toggle('open');ch.textContent=exp?'▲ Hide':'▼ Show';}
+document.getElementById('submitUpdateBtn').addEventListener('click',()=>{
+  const proj=curProj();if(!proj)return;
+  const weekOf=document.getElementById('weekOf').value;if(!weekOf){alert('Please select a week.');return;}
+  if(!proj.openItems)proj.openItems=[];
+  const delUpdates=[];
+  document.querySelectorAll('.del-update-row').forEach(row=>{
+    const id=row.dataset.id,rag=getRag(row.querySelector('.del-rag-inline')),prog=Math.min(100,Math.max(0,parseInt(row.querySelector('.del-prog-input').value)||0)),comment=row.querySelector('.del-comment-input').value.trim();
+    delUpdates.push({id,rag,progress:prog,comment});const del=proj.deliverables.find(d=>d.id===id);if(del){del.rag=rag;del.progress=prog;}
+  });
+  const decisionsText=document.getElementById('decisions').value.trim();
+  const risksText=document.getElementById('risks').value.trim();
+  const wkLabel=new Date(weekOf+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  if(decisionsText)proj.openItems.push({id:Date.now()+'_d',type:'decision',desc:decisionsText,owner:'',priority:'high',due:'',raisedDate:weekOf,raisedWeek:wkLabel,resolved:false,resolvedNote:''});
+  if(risksText)proj.openItems.push({id:(Date.now()+1)+'_r',type:'risk',desc:risksText,owner:'',priority:'high',due:'',raisedDate:weekOf,raisedWeek:wkLabel,resolved:false,resolvedNote:''});
+  proj.updates.unshift({id:Date.now().toString(),weekOf,submittedAt:new Date().toISOString(),overallRag:getRag(document.getElementById('overall-rag')),execSummary:document.getElementById('execSummary').value.trim(),decisions:decisionsText,risks:risksText,nextWeek:document.getElementById('nextWeek').value.trim(),delUpdates});
+  save();try{localStorage.removeItem(draftKey());}catch(e){}showDraftBadge(false);
+  ['execSummary','decisions','risks','nextWeek'].forEach(id=>document.getElementById(id).value='');
+  updateOiBadge();toast('✅ Weekly update submitted!');renderDashboard();renderDeliverables();
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelector('[data-tab="log"]').classList.add('active');document.getElementById('tab-log').classList.add('active');renderLog();
 });
 
 // OPEN ITEMS
-function updateOiBadge(){const proj=curProj();if(!proj)return;if(!proj.openItems)proj.openItems=[];const n=proj.openItems.filter(i=>!i.resolved).length;const b=document.getElementById(‘open-items-badge’);if(b){b.textContent=n;b.style.display=n>0?‘inline-block’:‘none’;}}
-function setFilter(f,btn){oiFilter=f;document.querySelectorAll(’.filter-btn’).forEach(b=>b.classList.remove(‘active’));btn.classList.add(‘active’);renderOiList();}
+function updateOiBadge(){const proj=curProj();if(!proj)return;if(!proj.openItems)proj.openItems=[];const n=proj.openItems.filter(i=>!i.resolved).length;const b=document.getElementById('open-items-badge');if(b){b.textContent=n;b.style.display=n>0?'inline-block':'none';}}
+function setFilter(f,btn){oiFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderOiList();}
 function renderOiList(){
-const proj=curProj();if(!proj)return;if(!proj.openItems)proj.openItems=[];
-const container=document.getElementById(‘oi-list’);container.innerHTML=’’;
-let items=proj.openItems;
-if(oiFilter===‘open’)items=items.filter(i=>!i.resolved);
-else if(oiFilter===‘resolved’)items=items.filter(i=>i.resolved);
-else if(oiFilter===‘decision’||oiFilter===‘risk’||oiFilter===‘action’)items=items.filter(i=>i.type===oiFilter);
-if(!items.length){container.innerHTML=`<div class="empty-state"><span>✅</span>${oiFilter==='open'?'No open items — all clear!':oiFilter==='resolved'?'No resolved items yet.':'No items in this category.'}</div>`;return;}
-const pOrd={high:0,medium:1,low:2};
-items=[…items].sort((a,b)=>{if(a.resolved!==b.resolved)return a.resolved?1:-1;return(pOrd[a.priority]||1)-(pOrd[b.priority]||1);});
-items.forEach(item=>{
-const card=document.createElement(‘div’);card.className=‘oi-card’+(item.resolved?’ resolved’:’’);
-const dueStr=item.due?new Date(item.due+‘T00:00:00’).toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’,year:‘numeric’}):’’;
-card.innerHTML=`<div class="oi-card-hdr"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="oi-type-badge ${item.type}">${oiLabel(item.type)}</span><span class="oi-priority ${item.priority}">${item.priority}</span>${item.resolved?'<span style="font-size:.65rem;color:var(--green);font-weight:600;letter-spacing:.06em;text-transform:uppercase">✓ Resolved</span>':''}</div><div style="display:flex;gap:6px">${!item.resolved?`<button class="btn success" style="padding:5px 12px;font-size:.65rem" onclick="openResolveModal('${item.id}')">Mark Resolved</button>`:''}<button class="delete-btn" onclick="deleteOiItem('${item.id}')">🗑</button></div></div><div class="oi-card-body ${item.resolved?'struck':''}">${esc(item.desc)}</div>${item.resolved&&item.resolvedNote?`<div class="resolved-note">✓ ${esc(item.resolvedNote)}</div>`:''}<div class="oi-card-ftr"><div style="display:flex;gap:16px;flex-wrap:wrap">${item.owner?`<span>👤 ${esc(item.owner)}</span>`:''} ${dueStr?`<span>📅 Due ${dueStr}</span>`:''}<span>Raised: ${item.raisedWeek||item.raisedDate||'—'}</span></div></div>`;
-container.appendChild(card);
-});
+  const proj=curProj();if(!proj)return;if(!proj.openItems)proj.openItems=[];
+  const container=document.getElementById('oi-list');container.innerHTML='';
+  let items=proj.openItems;
+  if(oiFilter==='open')items=items.filter(i=>!i.resolved);
+  else if(oiFilter==='resolved')items=items.filter(i=>i.resolved);
+  else if(oiFilter==='decision'||oiFilter==='risk'||oiFilter==='action')items=items.filter(i=>i.type===oiFilter);
+  if(!items.length){container.innerHTML=`<div class="empty-state"><span>✅</span>${oiFilter==='open'?'No open items — all clear!':oiFilter==='resolved'?'No resolved items yet.':'No items in this category.'}</div>`;return;}
+  const pOrd={high:0,medium:1,low:2};
+  items=[...items].sort((a,b)=>{if(a.resolved!==b.resolved)return a.resolved?1:-1;return(pOrd[a.priority]||1)-(pOrd[b.priority]||1);});
+  items.forEach(item=>{
+    const card=document.createElement('div');card.className='oi-card'+(item.resolved?' resolved':'');
+    const dueStr=item.due?new Date(item.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+    card.innerHTML=`<div class="oi-card-hdr"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="oi-type-badge ${item.type}">${oiLabel(item.type)}</span><span class="oi-priority ${item.priority}">${item.priority}</span>${item.resolved?'<span style="font-size:.65rem;color:var(--green);font-weight:600;letter-spacing:.06em;text-transform:uppercase">✓ Resolved</span>':''}</div><div style="display:flex;gap:6px">${!item.resolved?`<button class="btn success" style="padding:5px 12px;font-size:.65rem" onclick="openResolveModal('${item.id}')">Mark Resolved</button>`:''}<button class="delete-btn" onclick="deleteOiItem('${item.id}')">🗑</button></div></div><div class="oi-card-body ${item.resolved?'struck':''}">${esc(item.desc)}</div>${item.resolved&&item.resolvedNote?`<div class="resolved-note">✓ ${esc(item.resolvedNote)}</div>`:''}<div class="oi-card-ftr"><div style="display:flex;gap:16px;flex-wrap:wrap">${item.owner?`<span>👤 ${esc(item.owner)}</span>`:''} ${dueStr?`<span>📅 Due ${dueStr}</span>`:''}<span>Raised: ${item.raisedWeek||item.raisedDate||'—'}</span></div></div>`;
+    container.appendChild(card);
+  });
 }
-function openAddOiModal(){document.getElementById(‘oi-type’).value=‘action’;document.getElementById(‘oi-desc’).value=’’;document.getElementById(‘oi-owner’).value=’’;document.getElementById(‘oi-priority’).value=‘medium’;document.getElementById(‘oi-due’).value=’’;document.getElementById(‘oi-modal’).classList.add(‘open’);}
-function closeOiModal(){document.getElementById(‘oi-modal’).classList.remove(‘open’);}
+function openAddOiModal(){document.getElementById('oi-type').value='action';document.getElementById('oi-desc').value='';document.getElementById('oi-owner').value='';document.getElementById('oi-priority').value='medium';document.getElementById('oi-due').value='';document.getElementById('oi-modal').classList.add('open');}
+function closeOiModal(){document.getElementById('oi-modal').classList.remove('open');}
 function saveOiItem(){
-const desc=document.getElementById(‘oi-desc’).value.trim();if(!desc){alert(‘Description is required.’);return;}
-const proj=curProj();if(!proj)return;if(!proj.openItems)proj.openItems=[];
-const today=new Date().toISOString().split(‘T’)[0];
-proj.openItems.push({id:Date.now().toString(),type:document.getElementById(‘oi-type’).value,desc,owner:document.getElementById(‘oi-owner’).value.trim(),priority:document.getElementById(‘oi-priority’).value,due:document.getElementById(‘oi-due’).value,raisedDate:today,raisedWeek:new Date().toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’}),resolved:false,resolvedNote:’’});
-save();closeOiModal();renderOiList();updateOiBadge();toast(‘✅ Open item added.’);
+  const desc=document.getElementById('oi-desc').value.trim();if(!desc){alert('Description is required.');return;}
+  const proj=curProj();if(!proj)return;if(!proj.openItems)proj.openItems=[];
+  const today=new Date().toISOString().split('T')[0];
+  proj.openItems.push({id:Date.now().toString(),type:document.getElementById('oi-type').value,desc,owner:document.getElementById('oi-owner').value.trim(),priority:document.getElementById('oi-priority').value,due:document.getElementById('oi-due').value,raisedDate:today,raisedWeek:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}),resolved:false,resolvedNote:''});
+  save();closeOiModal();renderOiList();updateOiBadge();toast('✅ Open item added.');
 }
-function openResolveModal(id){resolvingId=id;document.getElementById(‘resolve-note’).value=’’;document.getElementById(‘resolve-modal’).classList.add(‘open’);}
-function closeResolveModal(){document.getElementById(‘resolve-modal’).classList.remove(‘open’);resolvingId=null;}
+function openResolveModal(id){resolvingId=id;document.getElementById('resolve-note').value='';document.getElementById('resolve-modal').classList.add('open');}
+function closeResolveModal(){document.getElementById('resolve-modal').classList.remove('open');resolvingId=null;}
 function confirmResolve(){
-const proj=curProj();if(!proj||!resolvingId)return;
-const item=(proj.openItems||[]).find(i=>i.id===resolvingId);if(!item)return;
-item.resolved=true;item.resolvedNote=document.getElementById(‘resolve-note’).value.trim();item.resolvedDate=new Date().toISOString().split(‘T’)[0];
-save();closeResolveModal();renderOiList();updateOiBadge();toast(‘✅ Item marked resolved.’);
+  const proj=curProj();if(!proj||!resolvingId)return;
+  const item=(proj.openItems||[]).find(i=>i.id===resolvingId);if(!item)return;
+  item.resolved=true;item.resolvedNote=document.getElementById('resolve-note').value.trim();item.resolvedDate=new Date().toISOString().split('T')[0];
+  save();closeResolveModal();renderOiList();updateOiBadge();toast('✅ Item marked resolved.');
 }
-window.deleteOiItem=function(id){if(!confirm(‘Delete this item?’))return;const proj=curProj();if(!proj)return;proj.openItems=(proj.openItems||[]).filter(i=>i.id!==id);save();renderOiList();updateOiBadge();};
+window.deleteOiItem=function(id){if(!confirm('Delete this item?'))return;const proj=curProj();if(!proj)return;proj.openItems=(proj.openItems||[]).filter(i=>i.id!==id);save();renderOiList();updateOiBadge();};
 
 // DASHBOARD
 function renderDashboard(){
-const proj=curProj();if(!proj)return;const dels=proj.deliverables;
-document.getElementById(‘stat-total’).textContent=dels.length;document.getElementById(‘stat-green’).textContent=dels.filter(d=>d.rag===‘green’).length;document.getElementById(‘stat-atrisk’).textContent=dels.filter(d=>d.rag===‘red’||d.rag===‘amber’).length;
-document.getElementById(‘rag-summary-pills’).innerHTML=`<div class="rag-pill green">🟢 ${dels.filter(d=>d.rag==='green').length} On Track</div><div class="rag-pill amber">🟡 ${dels.filter(d=>d.rag==='amber').length} At Risk</div><div class="rag-pill red">🔴 ${dels.filter(d=>d.rag==='red').length} Off Track</div>`;
-const tbody=document.getElementById(‘dashboard-tbody’);tbody.innerHTML=’’;
-if(!dels.length){tbody.innerHTML=’<tr><td colspan="5" class="no-data" style="padding:24px;text-align:center">No deliverables yet.</td></tr>’;}
-else dels.forEach(d=>{const u=proj.updates.flatMap(x=>x.delUpdates).find(x=>x.id===d.id),dueStr=d.due?new Date(d.due+‘T00:00:00’).toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’,year:‘numeric’}):’—’;tbody.innerHTML+=`<tr><td><strong>${esc(d.name)}</strong></td><td>${esc(d.owner)||'—'}</td><td>${dueStr}</td><td><span class="rag-dot ${d.rag}"></span>${ragLabel(d.rag)}</td><td style="color:var(--muted);font-size:.78rem">${esc(u?.comment||'—')}</td></tr>`;});
-const lu=proj.updates[0],se=document.getElementById(‘latest-update-summary’),nu=document.getElementById(‘no-updates-yet’),db=document.getElementById(‘directorSummaryBtn’);
-if(!lu){se.style.display=‘none’;nu.style.display=‘block’;db.style.display=‘none’;return;}
-nu.style.display=‘none’;se.style.display=‘block’;db.style.display=‘inline-block’;
-const wk=new Date(lu.weekOf+‘T00:00:00’).toLocaleDateString(‘en-US’,{month:‘long’,day:‘numeric’,year:‘numeric’});
-se.innerHTML=`<div class="entry-header"><div class="week-label">Week of ${wk}</div><div style="display:flex;align-items:center;gap:10px"><span class="rag-dot ${lu.overallRag}"></span><strong>Overall: ${ragLabel(lu.overallRag)}</strong></div></div>${lu.execSummary?`<p style="font-size:.82rem;margin-bottom:12px">${esc(lu.execSummary)}</p>`:''}${lu.risks?`<div class="overall-note"><strong>⚠ Risks:</strong> ${esc(lu.risks)}</div>`:''}${lu.nextWeek?`<div class="overall-note"><strong>→ Next Week:</strong> ${esc(lu.nextWeek)}</div>`:''}`;
+  const proj=curProj();if(!proj)return;const dels=proj.deliverables;
+  document.getElementById('stat-total').textContent=dels.length;document.getElementById('stat-green').textContent=dels.filter(d=>d.rag==='green').length;document.getElementById('stat-atrisk').textContent=dels.filter(d=>d.rag==='red'||d.rag==='amber').length;
+  document.getElementById('rag-summary-pills').innerHTML=`<div class="rag-pill green">🟢 ${dels.filter(d=>d.rag==='green').length} On Track</div><div class="rag-pill amber">🟡 ${dels.filter(d=>d.rag==='amber').length} At Risk</div><div class="rag-pill red">🔴 ${dels.filter(d=>d.rag==='red').length} Off Track</div>`;
+  const tbody=document.getElementById('dashboard-tbody');tbody.innerHTML='';
+  if(!dels.length){tbody.innerHTML='<tr><td colspan="5" class="no-data" style="padding:24px;text-align:center">No deliverables yet.</td></tr>';}
+  else dels.forEach(d=>{const u=proj.updates.flatMap(x=>x.delUpdates).find(x=>x.id===d.id),dueStr=d.due?new Date(d.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';tbody.innerHTML+=`<tr><td><strong>${esc(d.name)}</strong></td><td>${esc(d.owner)||'—'}</td><td>${dueStr}</td><td><span class="rag-dot ${d.rag}"></span>${ragLabel(d.rag)}</td><td style="color:var(--muted);font-size:.78rem">${esc(u?.comment||'—')}</td></tr>`;});
+  const lu=proj.updates[0],se=document.getElementById('latest-update-summary'),nu=document.getElementById('no-updates-yet'),db=document.getElementById('directorSummaryBtn');
+  if(!lu){se.style.display='none';nu.style.display='block';db.style.display='none';return;}
+  nu.style.display='none';se.style.display='block';db.style.display='inline-block';
+  const wk=new Date(lu.weekOf+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  se.innerHTML=`<div class="entry-header"><div class="week-label">Week of ${wk}</div><div style="display:flex;align-items:center;gap:10px"><span class="rag-dot ${lu.overallRag}"></span><strong>Overall: ${ragLabel(lu.overallRag)}</strong></div></div>${lu.execSummary?`<p style="font-size:.82rem;margin-bottom:12px">${esc(lu.execSummary)}</p>`:''}${lu.risks?`<div class="overall-note"><strong>⚠ Risks:</strong> ${esc(lu.risks)}</div>`:''}${lu.nextWeek?`<div class="overall-note"><strong>→ Next Week:</strong> ${esc(lu.nextWeek)}</div>`:''}`;
 }
 
 // LOG
 function renderLog(){
-const proj=curProj();if(!proj)return;const container=document.getElementById(‘log-container’);
-if(!proj.updates.length){container.innerHTML=’<div class="empty-state"><span>📅</span>No updates logged yet.</div>’;return;}
-container.innerHTML=’’;
-proj.updates.forEach(u=>{
-const wk=new Date(u.weekOf+‘T00:00:00’).toLocaleDateString(‘en-US’,{month:‘long’,day:‘numeric’,year:‘numeric’}),sub=new Date(u.submittedAt).toLocaleString(‘en-US’,{month:‘short’,day:‘numeric’,hour:‘numeric’,minute:‘2-digit’});
-let dr=’’;u.delUpdates.forEach(du=>{const del=proj.deliverables.find(d=>d.id===du.id);dr+=`<div class="deliverable-row"><span class="rag-dot ${du.rag}"></span><span class="del-name">${esc(del?del.name:'Deleted')}</span><span class="del-comment">${du.progress}% — ${du.comment?esc(du.comment):'<em>No comment</em>'}</span></div>`;});
-const div=document.createElement(‘div’);div.className=‘update-entry’;
-div.innerHTML=`<div class="entry-header"><div class="week-label">Week of ${wk}</div><div style="display:flex;align-items:center;gap:16px"><span><span class="rag-dot ${u.overallRag}"></span><strong>Overall: ${ragLabel(u.overallRag)}</strong></span><span class="timestamp">Logged ${sub}</span><button class="delete-btn" onclick="deleteUpdate('${u.id}')">🗑</button></div></div>${u.execSummary?`<p style="font-size:.82rem;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--cream)"><strong>Summary:</strong> ${esc(u.execSummary)}</p>`:''} ${dr}${u.decisions?`<div class="overall-note"><strong>🔑 Decisions Needed:</strong> ${esc(u.decisions)}</div>`:''}${u.risks?`<div class="overall-note"><strong>⚠ Risks & Issues:</strong> ${esc(u.risks)}</div>`:''}${u.nextWeek?`<div class="overall-note"><strong>→ Next Week:</strong> ${esc(u.nextWeek)}</div>`:''}`;
-container.appendChild(div);
-});
+  const proj=curProj();if(!proj)return;const container=document.getElementById('log-container');
+  if(!proj.updates.length){container.innerHTML='<div class="empty-state"><span>📅</span>No updates logged yet.</div>';return;}
+  container.innerHTML='';
+  proj.updates.forEach(u=>{
+    const wk=new Date(u.weekOf+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}),sub=new Date(u.submittedAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+    let dr='';u.delUpdates.forEach(du=>{const del=proj.deliverables.find(d=>d.id===du.id);dr+=`<div class="deliverable-row"><span class="rag-dot ${du.rag}"></span><span class="del-name">${esc(del?del.name:'Deleted')}</span><span class="del-comment">${du.progress}% — ${du.comment?esc(du.comment):'<em>No comment</em>'}</span></div>`;});
+    const div=document.createElement('div');div.className='update-entry';
+    div.innerHTML=`<div class="entry-header"><div class="week-label">Week of ${wk}</div><div style="display:flex;align-items:center;gap:16px"><span><span class="rag-dot ${u.overallRag}"></span><strong>Overall: ${ragLabel(u.overallRag)}</strong></span><span class="timestamp">Logged ${sub}</span><button class="delete-btn" onclick="deleteUpdate('${u.id}')">🗑</button></div></div>${u.execSummary?`<p style="font-size:.82rem;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--cream)"><strong>Summary:</strong> ${esc(u.execSummary)}</p>`:''} ${dr}${u.decisions?`<div class="overall-note"><strong>🔑 Decisions Needed:</strong> ${esc(u.decisions)}</div>`:''}${u.risks?`<div class="overall-note"><strong>⚠ Risks &amp; Issues:</strong> ${esc(u.risks)}</div>`:''}${u.nextWeek?`<div class="overall-note"><strong>→ Next Week:</strong> ${esc(u.nextWeek)}</div>`:''}`;
+    container.appendChild(div);
+  });
 }
-window.deleteUpdate=function(id){if(!confirm(‘Delete this update?’))return;const proj=curProj();if(!proj)return;proj.updates=proj.updates.filter(u=>u.id!==id);save();renderLog();renderDashboard();};
+window.deleteUpdate=function(id){if(!confirm('Delete this update?'))return;const proj=curProj();if(!proj)return;proj.updates=proj.updates.filter(u=>u.id!==id);save();renderLog();renderDashboard();};
 
 // DELETE PROJECT
-window.deleteProject=function(id){const proj=portfolio.projects.find(p=>p.id===id);if(!proj)return;if(!confirm(`Delete project "${proj.name}"? Cannot be undone.`))return;portfolio.projects=portfolio.projects.filter(p=>p.id!==id);save();renderPortfolio();toast(‘Project deleted.’);};
-window.deleteCurrentProject=function(){const proj=curProj();if(!proj)return;if(!confirm(`Delete "${proj.name}" and all its data? Cannot be undone.`))return;portfolio.projects=portfolio.projects.filter(p=>p.id!==currentProjectId);save();goHome();toast(‘Project deleted.’);};
+window.deleteProject=function(id){const proj=portfolio.projects.find(p=>p.id===id);if(!proj)return;if(!confirm(`Delete project "${proj.name}"? Cannot be undone.`))return;portfolio.projects=portfolio.projects.filter(p=>p.id!==id);save();renderPortfolio();toast('Project deleted.');};
+window.deleteCurrentProject=function(){const proj=curProj();if(!proj)return;if(!confirm(`Delete "${proj.name}" and all its data? Cannot be undone.`))return;portfolio.projects=portfolio.projects.filter(p=>p.id!==currentProjectId);save();goHome();toast('Project deleted.');};
 
 // EXPORT / IMPORT
-window.exportProject=function(){const proj=curProj();if(!proj)return;const blob=new Blob([JSON.stringify({…proj,exportedAt:new Date().toISOString(),version:‘3.0’},null,2)],{type:‘application/json’});const a=document.createElement(‘a’),dateStr=new Date().toISOString().split(‘T’)[0],slug=proj.name.toLowerCase().replace(/[^a-z0-9]/g,’-’);a.href=URL.createObjectURL(blob);a.download=`${slug}-backup-${dateStr}.json`;a.click();URL.revokeObjectURL(a.href);toast(‘✅ Project backup exported!’);};
-window.importProject=function(event){const file=event.target.files[0];if(!file)return;if(!confirm(‘⚠ Replace ALL data for this project?’)){event.target.value=’’;return;}const reader=new FileReader();reader.onload=function(e){try{const imp=JSON.parse(e.target.result);if(!imp.deliverables||!imp.updates)throw new Error();const proj=curProj();if(!proj)return;proj.name=imp.name||proj.name;proj.client=imp.client||proj.client;proj.desc=imp.desc||proj.desc;proj.deliverables=imp.deliverables;proj.updates=imp.updates;proj.openItems=imp.openItems||[];save();renderDashboard();renderDeliverables();updateOiBadge();document.getElementById(‘breadcrumb-name’).textContent=proj.name;document.getElementById(‘header-subtitle’).textContent=(proj.client?proj.client+’ · ‘:’’)+proj.name;toast(‘✅ Project restored!’);}catch(err){alert(‘❌ Invalid backup file.’);}event.target.value=’’;};reader.readAsText(file);};
-window.exportPortfolio=function(){const blob=new Blob([JSON.stringify({…portfolio,exportedAt:new Date().toISOString(),version:‘3.0’},null,2)],{type:‘application/json’});const a=document.createElement(‘a’),dateStr=new Date().toISOString().split(‘T’)[0];a.href=URL.createObjectURL(blob);a.download=`portfolio-backup-${dateStr}.json`;a.click();URL.revokeObjectURL(a.href);toast(‘✅ Portfolio backup exported!’);};
-window.importPortfolio=function(event){const file=event.target.files[0];if(!file)return;if(!confirm(‘⚠ Replace your ENTIRE portfolio?’)){event.target.value=’’;return;}const reader=new FileReader();reader.onload=function(e){try{const imp=JSON.parse(e.target.result);if(!imp.projects)throw new Error();portfolio={projects:imp.projects};save();renderPortfolio();toast(‘✅ Portfolio restored!’);}catch(err){alert(‘❌ Invalid portfolio backup file.’);}event.target.value=’’;};reader.readAsText(file);};
+window.exportProject=function(){const proj=curProj();if(!proj)return;const blob=new Blob([JSON.stringify({...proj,exportedAt:new Date().toISOString(),version:'3.0'},null,2)],{type:'application/json'});const a=document.createElement('a'),dateStr=new Date().toISOString().split('T')[0],slug=proj.name.toLowerCase().replace(/[^a-z0-9]/g,'-');a.href=URL.createObjectURL(blob);a.download=`${slug}-backup-${dateStr}.json`;a.click();URL.revokeObjectURL(a.href);toast('✅ Project backup exported!');};
+window.importProject=function(event){const file=event.target.files[0];if(!file)return;if(!confirm('⚠ Replace ALL data for this project?')){event.target.value='';return;}const reader=new FileReader();reader.onload=function(e){try{const imp=JSON.parse(e.target.result);if(!imp.deliverables||!imp.updates)throw new Error();const proj=curProj();if(!proj)return;proj.name=imp.name||proj.name;proj.client=imp.client||proj.client;proj.desc=imp.desc||proj.desc;proj.deliverables=imp.deliverables;proj.updates=imp.updates;proj.openItems=imp.openItems||[];save();renderDashboard();renderDeliverables();updateOiBadge();document.getElementById('breadcrumb-name').textContent=proj.name;document.getElementById('header-subtitle').textContent=(proj.client?proj.client+' · ':'')+proj.name;toast('✅ Project restored!');}catch(err){alert('❌ Invalid backup file.');}event.target.value='';};reader.readAsText(file);};
+window.exportPortfolio=function(){const blob=new Blob([JSON.stringify({...portfolio,exportedAt:new Date().toISOString(),version:'3.0'},null,2)],{type:'application/json'});const a=document.createElement('a'),dateStr=new Date().toISOString().split('T')[0];a.href=URL.createObjectURL(blob);a.download=`portfolio-backup-${dateStr}.json`;a.click();URL.revokeObjectURL(a.href);toast('✅ Portfolio backup exported!');};
+window.importPortfolio=function(event){const file=event.target.files[0];if(!file)return;if(!confirm('⚠ Replace your ENTIRE portfolio?')){event.target.value='';return;}const reader=new FileReader();reader.onload=function(e){try{const imp=JSON.parse(e.target.result);if(!imp.projects)throw new Error();portfolio={projects:imp.projects};save();renderPortfolio();toast('✅ Portfolio restored!');}catch(err){alert('❌ Invalid portfolio backup file.');}event.target.value='';};reader.readAsText(file);};
 
 // DIRECTOR SUMMARY
 window.generateDirectorSummary=function(){
-const proj=curProj();if(!proj)return;const u=proj.updates[0];if(!u){alert(‘No weekly update available. Submit a weekly update first.’);return;}
-const wk=new Date(u.weekOf+‘T00:00:00’).toLocaleDateString(‘en-US’,{month:‘long’,day:‘numeric’,year:‘numeric’}),gen=new Date().toLocaleDateString(‘en-US’,{month:‘long’,day:‘numeric’,year:‘numeric’});
-const RC={green:’#2a7a4b’,amber:’#d4860a’,red:’#c84b2f’},RB={green:’#e6f4ec’,amber:’#fef6e4’,red:’#fdecea’},RT={green:‘ON TRACK’,amber:‘AT RISK’,red:‘OFF TRACK’};
-let delRows=’’;
-u.delUpdates.forEach(du=>{const del=proj.deliverables.find(d=>d.id===du.id);if(!del)return;const dueStr=del.due?new Date(del.due+‘T00:00:00’).toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’,year:‘numeric’}):’—’;delRows+=`<tr><td style="padding:10px 12px;border-bottom:1px solid #eee;font-weight:600">${esc(del.name)}</td><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#555">${esc(del.owner)||'—'}</td><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#555">${dueStr}</td><td style="padding:10px 12px;border-bottom:1px solid #eee"><span style="background:${RB[du.rag]};color:${RC[du.rag]};padding:3px 10px;border-radius:2px;font-size:11px;font-weight:700;letter-spacing:.08em">${RT[du.rag]}</span></td><td style="padding:10px 12px;border-bottom:1px solid #eee">${du.progress}%</td><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#555;font-size:13px">${du.comment?esc(du.comment):'<em style="color:#aaa">No comment</em>'}</td></tr>`;});
-const openOIs=(proj.openItems||[]).filter(i=>!i.resolved);
-const oiRows=openOIs.map(i=>`<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;font-weight:600">${oiLabel(i.type)}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:13px">${esc(i.desc)}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;color:#555">${esc(i.owner)||'—'}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:11px;text-transform:uppercase;font-weight:700;color:${i.priority==='high'?'#c84b2f':i.priority==='medium'?'#d4860a':'#2a7a4b'}">${i.priority}</td></tr>`).join(’’);
-document.getElementById(‘director-print-area’).innerHTML=`<div style="font-family:Georgia,serif;color:#111;max-width:900px;margin:0 auto"><div style="border-bottom:3px solid #1a1612;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px"><div><div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:6px">Project Status Report — For Director of Projects</div><div style="font-size:28px;font-weight:700;letter-spacing:-.02em">${esc(proj.name)}</div>${proj.client?`<div style="font-size:14px;color:#888;margin-top:2px">${esc(proj.client)}</div>`:''}<div style="font-size:14px;color:#555;margin-top:4px">Week of ${wk}</div></div><div style="text-align:right"><div style="background:${RB[u.overallRag]};border:2px solid ${RC[u.overallRag]};color:${RC[u.overallRag]};padding:10px 20px;border-radius:4px;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase">Overall: ${RT[u.overallRag]}</div><div style="font-size:11px;color:#aaa;margin-top:6px">Generated ${gen}</div></div></div>${u.execSummary?`<div style="background:#f9f9f9;border-left:4px solid #1a1612;padding:16px 20px;margin-bottom:24px;border-radius:0 4px 4px 0"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:8px">Executive Summary</div><div style="font-size:15px;line-height:1.7">${esc(u.execSummary)}</div></div>`:''}<div style="margin-bottom:24px"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:12px">Deliverable Status</div><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#f5f0e8"><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Deliverable</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Owner</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Due</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Status</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Progress</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">This Week</th></tr></thead><tbody>${delRows}</tbody></table></div>${openOIs.length?`<div style="margin-bottom:24px"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c84b2f;margin-bottom:12px">Open Items Requiring Attention (${openOIs.length})</div><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#fdecea"><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Type</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Description</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Owner</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Priority</th></tr></thead><tbody>${oiRows}</tbody></table></div>`:''}<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">${u.decisions&&!openOIs.length?`<div style="background:#fffbf0;border:1px solid #f5dfa0;padding:16px;border-radius:4px"><div style="font-size:11px;text-transform:uppercase;color:#d4860a;margin-bottom:8px;font-weight:700">🔑 Decisions Needed</div><div style="font-size:14px;line-height:1.7">${esc(u.decisions)}</div></div>`:'<div></div>'}${u.risks&&!openOIs.length?`<div style="background:#fff8f8;border:1px solid #f5c4be;padding:16px;border-radius:4px"><div style="font-size:11px;text-transform:uppercase;color:#c84b2f;margin-bottom:8px;font-weight:700">⚠ Risks & Issues</div><div style="font-size:14px;line-height:1.7">${esc(u.risks)}</div></div>`:'<div></div>'}</div>${u.nextWeek?`<div style="border-top:1px solid #ddd;padding-top:16px"><div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:8px">→ Next Week’s Focus</div><div style="font-size:14px;line-height:1.7">${esc(u.nextWeek)}</div></div>`:''}<div style="margin-top:40px;padding-top:12px;border-top:1px solid #eee;font-size:11px;color:#bbb;display:flex;justify-content:space-between"><span>Prepared by Project Manager</span><span>Confidential — Director of Projects</span></div></div>`;
-window.print();
+  const proj=curProj();if(!proj)return;const u=proj.updates[0];if(!u){alert('No weekly update available. Submit a weekly update first.');return;}
+  const wk=new Date(u.weekOf+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}),gen=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const RC={green:'#2a7a4b',amber:'#d4860a',red:'#c84b2f'},RB={green:'#e6f4ec',amber:'#fef6e4',red:'#fdecea'},RT={green:'ON TRACK',amber:'AT RISK',red:'OFF TRACK'};
+  let delRows='';
+  u.delUpdates.forEach(du=>{const del=proj.deliverables.find(d=>d.id===du.id);if(!del)return;const dueStr=del.due?new Date(del.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';delRows+=`<tr><td style="padding:10px 12px;border-bottom:1px solid #eee;font-weight:600">${esc(del.name)}</td><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#555">${esc(del.owner)||'—'}</td><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#555">${dueStr}</td><td style="padding:10px 12px;border-bottom:1px solid #eee"><span style="background:${RB[du.rag]};color:${RC[du.rag]};padding:3px 10px;border-radius:2px;font-size:11px;font-weight:700;letter-spacing:.08em">${RT[du.rag]}</span></td><td style="padding:10px 12px;border-bottom:1px solid #eee">${du.progress}%</td><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#555;font-size:13px">${du.comment?esc(du.comment):'<em style="color:#aaa">No comment</em>'}</td></tr>`;});
+  const openOIs=(proj.openItems||[]).filter(i=>!i.resolved);
+  const oiRows=openOIs.map(i=>`<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;font-weight:600">${oiLabel(i.type)}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:13px">${esc(i.desc)}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;color:#555">${esc(i.owner)||'—'}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:11px;text-transform:uppercase;font-weight:700;color:${i.priority==='high'?'#c84b2f':i.priority==='medium'?'#d4860a':'#2a7a4b'}">${i.priority}</td></tr>`).join('');
+  document.getElementById('director-print-area').innerHTML=`<div style="font-family:Georgia,serif;color:#111;max-width:900px;margin:0 auto"><div style="border-bottom:3px solid #1a1612;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px"><div><div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:6px">Project Status Report — For Director of Projects</div><div style="font-size:28px;font-weight:700;letter-spacing:-.02em">${esc(proj.name)}</div>${proj.client?`<div style="font-size:14px;color:#888;margin-top:2px">${esc(proj.client)}</div>`:''}<div style="font-size:14px;color:#555;margin-top:4px">Week of ${wk}</div></div><div style="text-align:right"><div style="background:${RB[u.overallRag]};border:2px solid ${RC[u.overallRag]};color:${RC[u.overallRag]};padding:10px 20px;border-radius:4px;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase">Overall: ${RT[u.overallRag]}</div><div style="font-size:11px;color:#aaa;margin-top:6px">Generated ${gen}</div></div></div>${u.execSummary?`<div style="background:#f9f9f9;border-left:4px solid #1a1612;padding:16px 20px;margin-bottom:24px;border-radius:0 4px 4px 0"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:8px">Executive Summary</div><div style="font-size:15px;line-height:1.7">${esc(u.execSummary)}</div></div>`:''}<div style="margin-bottom:24px"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:12px">Deliverable Status</div><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#f5f0e8"><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Deliverable</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Owner</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Due</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Status</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">Progress</th><th style="padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #ddd">This Week</th></tr></thead><tbody>${delRows}</tbody></table></div>${openOIs.length?`<div style="margin-bottom:24px"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c84b2f;margin-bottom:12px">Open Items Requiring Attention (${openOIs.length})</div><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#fdecea"><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Type</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Description</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Owner</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;color:#888;border-bottom:2px solid #f5c4be">Priority</th></tr></thead><tbody>${oiRows}</tbody></table></div>`:''}<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">${u.decisions&&!openOIs.length?`<div style="background:#fffbf0;border:1px solid #f5dfa0;padding:16px;border-radius:4px"><div style="font-size:11px;text-transform:uppercase;color:#d4860a;margin-bottom:8px;font-weight:700">🔑 Decisions Needed</div><div style="font-size:14px;line-height:1.7">${esc(u.decisions)}</div></div>`:'<div></div>'}${u.risks&&!openOIs.length?`<div style="background:#fff8f8;border:1px solid #f5c4be;padding:16px;border-radius:4px"><div style="font-size:11px;text-transform:uppercase;color:#c84b2f;margin-bottom:8px;font-weight:700">⚠ Risks &amp; Issues</div><div style="font-size:14px;line-height:1.7">${esc(u.risks)}</div></div>`:'<div></div>'}</div>${u.nextWeek?`<div style="border-top:1px solid #ddd;padding-top:16px"><div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:8px">→ Next Week's Focus</div><div style="font-size:14px;line-height:1.7">${esc(u.nextWeek)}</div></div>`:''}<div style="margin-top:40px;padding-top:12px;border-top:1px solid #eee;font-size:11px;color:#bbb;display:flex;justify-content:space-between"><span>Prepared by Project Manager</span><span>Confidential — Director of Projects</span></div></div>`;
+  window.print();
 };
 
 goHome();renderPortfolio();
 </script>
-
 </body>
 </html>
