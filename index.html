@@ -156,6 +156,15 @@
   .toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:var(--paper);padding:12px 20px;border-radius:4px;font-size:.78rem;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
   .toast.show{opacity:1;}
   #importFile,#importPortfolioFile{display:none;}
+  .oi-notes-section{margin-top:10px;border-top:1px solid var(--cream);padding-top:10px;}
+  .oi-notes-section label{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block;}
+  .oi-note-entry{font-size:.75rem;padding:6px 10px;background:var(--cream);border-radius:2px;margin-bottom:4px;line-height:1.5;}
+  .oi-note-entry .note-ts{font-size:.65rem;color:var(--muted);margin-right:6px;}
+  .oi-note-add{display:flex;gap:8px;margin-top:6px;}
+  .oi-note-add input{flex:1;padding:6px 10px;border:1px solid var(--rule);border-radius:2px;background:var(--card);font-family:'Aptos',sans-serif;font-size:.78rem;color:var(--ink);}
+  .oi-note-add button{padding:6px 14px;font-size:.68rem;}
+  .sort-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:.7rem;color:var(--muted);}
+  .sort-bar select{padding:4px 10px;border:1px solid var(--rule);border-radius:2px;background:var(--card);font-family:'Aptos',sans-serif;font-size:.7rem;color:var(--ink);}
   #director-print-area{display:none;}
   @media print{body *{visibility:hidden;}#director-print-area,#director-print-area *{visibility:visible;}#director-print-area{position:fixed;inset:0;background:#fff;padding:40px;display:block!important;}}
 </style>
@@ -217,7 +226,7 @@
     </div>
     <!-- DELIVERABLES -->
     <div class="section" id="tab-deliverables">
-      <div class="section-header"><div class="section-title">Deliverables &amp; Milestones</div><button class="btn" id="addDeliverableBtn">+ Add Deliverable</button></div>
+      <div class="section-header"><div class="section-title">Deliverables &amp; Milestones</div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="sort-bar" style="margin-bottom:0">Sort by: <select id="del-sort" onchange="renderDeliverables()"><option value="none">Default</option><option value="due">Due Date</option><option value="status">Status</option><option value="name">Name</option></select></div><button class="btn" id="addDeliverableBtn">+ Add Deliverable</button></div></div>
       <table><thead><tr><th>Deliverable</th><th>Owner</th><th>Due Date</th><th>Status</th><th>Progress</th><th></th></tr></thead><tbody id="del-tbody"></tbody></table>
       <div id="del-empty" class="empty-state" style="display:none"><span>🎯</span>No deliverables yet.</div>
     </div>
@@ -270,6 +279,7 @@
         <button class="filter-btn" onclick="setFilter('action',this)">Actions</button>
         <button class="filter-btn" onclick="setFilter('resolved',this)">Resolved</button>
       </div>
+      <div class="sort-bar">Sort by: <select id="oi-sort" onchange="renderOiList()"><option value="priority">Priority</option><option value="due">Due Date</option><option value="raised">Date Raised</option><option value="type">Type</option></select></div>
       <div id="oi-list"></div>
     </div>
     <!-- LOG -->
@@ -340,6 +350,21 @@
   <div class="modal"><h2>Mark Item Resolved</h2>
     <div class="form-group"><label>Resolution Note (optional)</label><textarea id="resolve-note" rows="3" placeholder="How was this resolved? Any decision or outcome?"></textarea></div>
     <div class="modal-actions"><button class="btn secondary" onclick="closeResolveModal()">Cancel</button><button class="btn success" onclick="confirmResolve()">Mark Resolved</button></div>
+  </div>
+</div>
+<!-- EDIT OPEN ITEM MODAL -->
+<div class="modal-overlay" id="oi-edit-modal">
+  <div class="modal"><h2>Edit Open Item</h2>
+    <div class="form-group"><label>Type *</label>
+      <select id="oie-type"><option value="decision">Decision Needed</option><option value="risk">Risk / Issue</option><option value="action">Action Item</option></select>
+    </div>
+    <div class="form-group"><label>Description *</label><textarea id="oie-desc" rows="3"></textarea></div>
+    <div class="form-group"><label>Owner</label><input type="text" id="oie-owner" placeholder="Who is responsible?"></div>
+    <div class="form-group"><label>Priority</label>
+      <select id="oie-priority"><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>
+    </div>
+    <div class="form-group"><label>Due Date (optional)</label><input type="date" id="oie-due"></div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeOiEditModal()">Cancel</button><button class="btn" onclick="saveOiEdit()">Save Changes</button></div>
   </div>
 </div>
 <div id="director-print-area"></div>
@@ -471,7 +496,13 @@ function renderDeliverables(){
   const proj=curProj();if(!proj)return;
   const tbody=document.getElementById('del-tbody'),empty=document.getElementById('del-empty');
   tbody.innerHTML='';if(!proj.deliverables.length){empty.style.display='block';return;}empty.style.display='none';
-  proj.deliverables.forEach(d=>{
+  const sortEl=document.getElementById('del-sort');const sortBy=sortEl?sortEl.value:'none';
+  const ragOrd={red:0,amber:1,green:2};
+  let dels=[...proj.deliverables];
+  if(sortBy==='due')dels.sort((a,b)=>{if(!a.due&&!b.due)return 0;if(!a.due)return 1;if(!b.due)return-1;return a.due.localeCompare(b.due);});
+  else if(sortBy==='status')dels.sort((a,b)=>(ragOrd[a.rag]||0)-(ragOrd[b.rag]||0));
+  else if(sortBy==='name')dels.sort((a,b)=>a.name.localeCompare(b.name));
+  dels.forEach(d=>{
     const dueStr=d.due?new Date(d.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
     const bar=d.rag==='red'?'var(--red)':d.rag==='amber'?'var(--amber)':'var(--green)';
     const tr=document.createElement('tr');
@@ -571,15 +602,59 @@ function renderOiList(){
   else if(oiFilter==='decision'||oiFilter==='risk'||oiFilter==='action')items=items.filter(i=>i.type===oiFilter);
   if(!items.length){container.innerHTML=`<div class="empty-state"><span>✅</span>${oiFilter==='open'?'No open items — all clear!':oiFilter==='resolved'?'No resolved items yet.':'No items in this category.'}</div>`;return;}
   const pOrd={high:0,medium:1,low:2};
-  items=[...items].sort((a,b)=>{if(a.resolved!==b.resolved)return a.resolved?1:-1;return(pOrd[a.priority]||1)-(pOrd[b.priority]||1);});
+  const sortEl=document.getElementById('oi-sort');const sortBy=sortEl?sortEl.value:'priority';
+  items=[...items].sort((a,b)=>{
+    if(a.resolved!==b.resolved)return a.resolved?1:-1;
+    if(sortBy==='due'){if(!a.due&&!b.due)return 0;if(!a.due)return 1;if(!b.due)return-1;return a.due.localeCompare(b.due);}
+    if(sortBy==='raised')return(a.raisedDate||'').localeCompare(b.raisedDate||'');
+    if(sortBy==='type')return a.type.localeCompare(b.type);
+    return(pOrd[a.priority]||1)-(pOrd[b.priority]||1);
+  });
   items.forEach(item=>{
+    if(!item.notes)item.notes=[];
     const card=document.createElement('div');card.className='oi-card'+(item.resolved?' resolved':'');
     const dueStr=item.due?new Date(item.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
-    card.innerHTML=`<div class="oi-card-hdr"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="oi-type-badge ${item.type}">${oiLabel(item.type)}</span><span class="oi-priority ${item.priority}">${item.priority}</span>${item.resolved?'<span style="font-size:.65rem;color:var(--green);font-weight:600;letter-spacing:.06em;text-transform:uppercase">✓ Resolved</span>':''}</div><div style="display:flex;gap:6px">${!item.resolved?`<button class="btn success" style="padding:5px 12px;font-size:.65rem" onclick="openResolveModal('${item.id}')">Mark Resolved</button>`:''}<button class="delete-btn" onclick="deleteOiItem('${item.id}')">🗑</button></div></div><div class="oi-card-body ${item.resolved?'struck':''}">${esc(item.desc)}</div>${item.resolved&&item.resolvedNote?`<div class="resolved-note">✓ ${esc(item.resolvedNote)}</div>`:''}<div class="oi-card-ftr"><div style="display:flex;gap:16px;flex-wrap:wrap">${item.owner?`<span>👤 ${esc(item.owner)}</span>`:''} ${dueStr?`<span>📅 Due ${dueStr}</span>`:''}<span>Raised: ${item.raisedWeek||item.raisedDate||'—'}</span></div></div>`;
+    const notesHtml=item.notes.map(n=>`<div class="oi-note-entry"><span class="note-ts">${esc(n.date)}</span>${esc(n.text)}</div>`).join('');
+    card.innerHTML=`<div class="oi-card-hdr"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="oi-type-badge ${item.type}">${oiLabel(item.type)}</span><span class="oi-priority ${item.priority}">${item.priority}</span>${item.resolved?'<span style="font-size:.65rem;color:var(--green);font-weight:600;letter-spacing:.06em;text-transform:uppercase">✓ Resolved</span>':''}</div><div style="display:flex;gap:6px">${!item.resolved?`<button class="btn secondary" style="padding:5px 12px;font-size:.65rem" onclick="openOiEditModal('${item.id}')">✏ Edit</button><button class="btn success" style="padding:5px 12px;font-size:.65rem" onclick="openResolveModal('${item.id}')">Mark Resolved</button>`:''}<button class="delete-btn" onclick="deleteOiItem('${item.id}')">🗑</button></div></div><div class="oi-card-body ${item.resolved?'struck':''}">${esc(item.desc)}</div>${item.resolved&&item.resolvedNote?`<div class="resolved-note">✓ ${esc(item.resolvedNote)}</div>`:''}<div class="oi-card-ftr"><div style="display:flex;gap:16px;flex-wrap:wrap">${item.owner?`<span>👤 ${esc(item.owner)}</span>`:''} ${dueStr?`<span>📅 Due ${dueStr}</span>`:''}<span>Raised: ${item.raisedWeek||item.raisedDate||'—'}</span></div></div><div class="oi-notes-section"><label>Progress Notes</label>${notesHtml}<div class="oi-note-add"><input type="text" placeholder="Add a progress note..." id="note-input-${item.id}" onkeydown="if(event.key==='Enter')addOiNote('${item.id}')"><button class="btn secondary" onclick="addOiNote('${item.id}')">+ Add</button></div></div>`;
     container.appendChild(card);
   });
 }
 function openAddOiModal(){document.getElementById('oi-type').value='action';document.getElementById('oi-desc').value='';document.getElementById('oi-owner').value='';document.getElementById('oi-priority').value='medium';document.getElementById('oi-due').value='';document.getElementById('oi-modal').classList.add('open');}
+let editingOiId=null;
+function openOiEditModal(id){
+  const proj=curProj();if(!proj)return;
+  const item=(proj.openItems||[]).find(i=>i.id===id);if(!item)return;
+  editingOiId=id;
+  document.getElementById('oie-type').value=item.type;
+  document.getElementById('oie-desc').value=item.desc;
+  document.getElementById('oie-owner').value=item.owner||'';
+  document.getElementById('oie-priority').value=item.priority||'medium';
+  document.getElementById('oie-due').value=item.due||'';
+  document.getElementById('oi-edit-modal').classList.add('open');
+}
+function closeOiEditModal(){document.getElementById('oi-edit-modal').classList.remove('open');editingOiId=null;}
+function saveOiEdit(){
+  if(!editingOiId)return;
+  const desc=document.getElementById('oie-desc').value.trim();if(!desc){alert('Description is required.');return;}
+  const proj=curProj();if(!proj)return;
+  const item=(proj.openItems||[]).find(i=>i.id===editingOiId);if(!item)return;
+  item.type=document.getElementById('oie-type').value;
+  item.desc=desc;
+  item.owner=document.getElementById('oie-owner').value.trim();
+  item.priority=document.getElementById('oie-priority').value;
+  item.due=document.getElementById('oie-due').value;
+  save();closeOiEditModal();renderOiList();updateOiBadge();toast('✅ Item updated.');
+}
+function addOiNote(id){
+  const input=document.getElementById('note-input-'+id);if(!input)return;
+  const text=input.value.trim();if(!text)return;
+  const proj=curProj();if(!proj)return;
+  const item=(proj.openItems||[]).find(i=>i.id===id);if(!item)return;
+  if(!item.notes)item.notes=[];
+  const date=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  item.notes.push({date,text});
+  save();renderOiList();toast('✅ Note added.');
+}
 function closeOiModal(){document.getElementById('oi-modal').classList.remove('open');}
 function saveOiItem(){
   const desc=document.getElementById('oi-desc').value.trim();if(!desc){alert('Description is required.');return;}
